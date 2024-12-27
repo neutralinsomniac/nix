@@ -117,6 +117,10 @@
     ];
   };
 
+  environment.variables = {
+    EDITOR = "hx";
+  };
+
   # direnv
   programs.direnv.enable = true;
 
