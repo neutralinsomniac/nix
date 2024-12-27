@@ -1,9 +1,10 @@
 { pkgs
+, pkgsUnstable
 , ...
 }:
 let
   tomlFmt = pkgs.formats.toml { };
-  helixBin = "${pkgs.helix}/bin/hx";
+  helixBin = "${pkgsUnstable.helix}/bin/hx";
 
   helixConfig = tomlFmt.generate "config.toml" {
     theme = "acme";

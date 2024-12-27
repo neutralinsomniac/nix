@@ -1,9 +1,12 @@
 { pkgs
+, inputs
+, pkgsUnstable
 , ...
 }:
 let
   tomlFmt = pkgs.formats.toml { };
-  jjBin = "${pkgs.jujutsu}/bin/jj";
+  jjPkg = pkgsUnstable.jujutsu;
+  jjBin = "${jjPkg}/bin/jj";
 
   jjConfig = tomlFmt.generate "config.toml" {
     user = {
