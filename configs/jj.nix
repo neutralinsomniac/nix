@@ -18,7 +18,6 @@ let
       diff.format = "git";
       pager = ":builtin";
       paginate = "never";
-      editor = "vim";
     };
     templates.draft_commit_description = ''
       concat(
@@ -38,10 +37,11 @@ let
     }
   ];
   jjScript = pkgs.writeScriptBin "jj" ''
-  # Conf:  ${jjConfig}
+    #!/usr/bin/env bash
+    # Conf:  ${jjConfig}
 
-  env XDG_CONFIG_HOME="${xdgDir}" ${jjBin} "$@"
-'';
+    env XDG_CONFIG_HOME="${xdgDir}" ${jjBin} "$@"
+  '';
 in
 {
   config = {

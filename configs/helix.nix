@@ -25,10 +25,11 @@ let
     }
   ];
   hxScript = pkgs.writeScriptBin "hx" ''
-  # Conf:  ${helixConfig}
+    #!/usr/bin/env bash
+    # Conf:  ${helixConfig}
 
-  env XDG_CONFIG_HOME="${xdgDir}" ${helixBin} "$@"
-'';
+    env XDG_CONFIG_HOME="${xdgDir}" ${helixBin} "$@"
+  '';
 in
 {
   config = {
