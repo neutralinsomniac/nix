@@ -14,10 +14,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./configs/git.nix
-      ./configs/helix.nix
-      ./configs/jj.nix
-      ./configs/firefox.nix
+      ./configs
     ];
 
   # Bootloader.

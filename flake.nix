@@ -7,15 +7,16 @@
   };
 
   outputs = inputs@{ self, nixpkgs, ... }:
-    let
-      lib = nixpkgs.lib;
-    in {
-      nixosConfigurations = {
-        xps13 = lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [ ./configuration.nix ];
-      };
-    };
+  let
+    lib = nixpkgs.lib;
+  in {
+    nixosConfigurations = lib.genAttrs ["xps13"] (hostName: lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [ 
+        { networking.hostName = hostName; }
+        ./configuration.nix
+      ];
+    });
   };
 }
