@@ -105,10 +105,14 @@
     cargo
     chromium
     clang
+    mosh
+    ncdu
     python313
     rustc
     signal-desktop
     spotify
+    tmux
+    vim
     wl-clipboard
     ];
   };
@@ -122,6 +126,12 @@
     # remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
+
+  programs.bash = {
+    interactiveShellInit = ''
+      source <(jj util completion bash)
+    '';
   };
 
   # fwupd
