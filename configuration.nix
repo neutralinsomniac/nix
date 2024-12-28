@@ -96,7 +96,6 @@
     description = "jeremy";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    #  thunderbird
     bitwarden-desktop
     cargo
     chromium
