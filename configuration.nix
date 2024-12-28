@@ -100,7 +100,10 @@
     cargo
     chromium
     clang
+    discord
+    go
     mosh
+    mpv
     ncdu
     python313
     rustc
