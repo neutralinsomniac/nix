@@ -112,22 +112,22 @@
     description = "jeremy";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    bitwarden-desktop
-    cargo
-    chromium
-    clang
-    discord
-    go
-    mosh
-    mpv
-    ncdu
-    python313
-    rustc
-    signal-desktop
-    spotify
-    tmux
-    vim
-    wl-clipboard
+      bitwarden-desktop
+      cargo
+      chromium
+      clang
+      discord
+      go
+      mosh
+      mpv
+      ncdu
+      python313
+      rustc
+      signal-desktop
+      spotify
+      tmux
+      vim
+      wl-clipboard
     ];
   };
 
@@ -146,9 +146,11 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
+  programs.command-not-found.enable = false;
   programs.bash = {
     interactiveShellInit = ''
       source <(jj util completion bash)
+      source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
     '';
   };
 
@@ -206,4 +208,8 @@
     options = "--delete-older-than 7d";
     persistent = true;
   };
+  # for devenv/cachix
+  # nix.extraOptions = ''
+  #   trusted-users = root jeremy
+  # '';
 }
