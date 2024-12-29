@@ -17,7 +17,26 @@
   boot.kernelParams = [ "i915.enable_psr=0" ];
 
   # enable throttled for cpu throttle bug
-  services.throttled.enable = true;
+  # services.throttled.enable = true;
+  # services.throttled.extraConfig = ''
+  #   [GENERAL]
+  #   # Enable or disable the script execution
+  #   Enabled: True
+  #   Autoreload: True
+
+  #   [AC]
+  #   Update_Rate_s: 30
+
+  #   ## Settings to apply while connected to Battery power
+  #   [BATTERY]
+  #   Update_Rate_s: 30
+  #   # Disable BDPROCHOT (EXPERIMENTAL)
+  #   Disable_BDPROCHOT: True
+  # '';
+
+  environment.systemPackages = with pkgs; [
+    msr-tools
+  ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/7c4cc89a-b86c-4b8e-9886-4bd2e1ac3395";
