@@ -13,6 +13,9 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  # disable panel self-refresh
+  boot.kernelParams = [ "i915.enable_psr=0" ];
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/7c4cc89a-b86c-4b8e-9886-4bd2e1ac3395";
       fsType = "btrfs";
