@@ -16,6 +16,9 @@
   # disable panel self-refresh
   boot.kernelParams = [ "i915.enable_psr=0" ];
 
+  # enable throttled for cpu throttle bug
+  services.throttled.enable = true;
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/7c4cc89a-b86c-4b8e-9886-4bd2e1ac3395";
       fsType = "btrfs";
