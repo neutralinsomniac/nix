@@ -17,7 +17,13 @@ let
       default-command = "log";
       diff.format = "git";
       pager = ":builtin";
-      paginate = "never";
+    };
+    alases = {
+      shortlog = ''["log", "-n", "20"]'';
+      up = ''["rebase", "-b", "@", "-d", "trunk()"]'';
+      a = ''["log", "-r", "all()"]'';
+      b = ''["bookmark"]'';
+      arst = ''["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]'';
     };
     templates.draft_commit_description = ''
       concat(
