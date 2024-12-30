@@ -12,7 +12,8 @@
   };
 
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      ./wm/plasma.nix
       ./configs
     ];
 
@@ -58,28 +59,6 @@
     };
   };
 
-  #   # i3+xfce (part of services.xserver above)
-  #   desktopManager = {
-  #     xterm.enable = false;
-  #     xfce = {
-  #       enable = true;
-  #       noDesktop = true;
-  #       enableXfwm = false;
-  #     };
-  #   };
-  #   windowManager.i3.enable = true;
-  # };
-  # services.displayManager.defaultSession = "xfce+i3";
-
-  # Enable the GNOME Desktop Environment.
-  # services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.desktopManager.gnome.enable = true;
-
-  # plasma6
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
-  services.desktopManager.plasma6.enable = true;
-
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -112,22 +91,6 @@
     description = "jeremy";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      bitwarden-desktop
-      cargo
-      chromium
-      clang
-      discord
-      go
-      mosh
-      mpv
-      ncdu
-      python313
-      rustc
-      signal-desktop
-      spotify
-      tmux
-      vim
-      wl-clipboard
     ];
   };
 
@@ -137,14 +100,6 @@
 
   # direnv
   programs.direnv.enable = true;
-
-  # steam
-  programs.steam = {
-    enable = true;
-    # remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
 
   programs.command-not-found.enable = false;
   programs.bash = {
@@ -157,20 +112,28 @@
   # fwupd
   services.fwupd.enable = true;
 
-  # tailscale
-  services.tailscale = {
-    enable = true;
-    useRoutingFeatures = "client";
-  };
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    bitwarden-desktop
+    cargo
+    chromium
+    clang
+    discord
+    go
+    mosh
+    mpv
+    ncdu
+    python313
+    rustc
+    signal-desktop
+    spotify
+    tmux
+    vim
+    wl-clipboard
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -208,8 +171,4 @@
     options = "--delete-older-than 7d";
     persistent = true;
   };
-  # for devenv/cachix
-  # nix.extraOptions = ''
-  #   trusted-users = root jeremy
-  # '';
 }
