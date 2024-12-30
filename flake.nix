@@ -9,11 +9,16 @@
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-index-database, ... }:
+  outputs = inputs@{
+    self,
+    nixpkgs,
+    nix-index-database,
+    ...
+  }:
   let
     lib = nixpkgs.lib;
   in {
-    nixosConfigurations = lib.genAttrs [ "x270" "xps13" ] (hostName: lib.nixosSystem {
+    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" ] (hostName: lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [ 
