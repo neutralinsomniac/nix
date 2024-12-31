@@ -4,7 +4,6 @@
 }:
 let
   ghosttyPkg = inputs.ghostty.packages.x86_64-linux.default;
-  ghosttyBin = "${ghosttyPkg}/bin/ghostty";
 
   ghosttyConfig = pkgs.writeText "config" ''
   gtk-single-instance = true
@@ -17,15 +16,18 @@ let
     }
   ];
 
-  ghosttyScript = pkgs.writeScriptBin "ghostty" ''
-    #!/usr/bin/env bash
-    # Conf:  ${ghosttyConfig}
-
-    env XDG_CONFIG_HOME="${xdgDir}" ${ghosttyBin} "$@"
-  '';
+  ghosttyWrapped = pkgs.symlinkJoin {
+    name = "ghostty";
+    paths = [ ghosttyPkg ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/ghostty \
+      --set XDG_CONFIG_HOME "${xdgDir}"
+      '';
+  };
 in
 {
   config = {
-    environment.systemPackages = [ ghosttyScript ];
+    environment.systemPackages = [ ghosttyWrapped ];
   };
 }

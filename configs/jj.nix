@@ -1,12 +1,10 @@
 { pkgs
-, inputs
 , pkgsUnstable
 , ...
 }:
 let
   tomlFmt = pkgs.formats.toml { };
   jjPkg = pkgsUnstable.jujutsu;
-  jjBin = "${jjPkg}/bin/jj";
 
   jjConfig = tomlFmt.generate "config.toml" {
     user = {
@@ -42,15 +40,19 @@ let
       path = jjConfig;
     }
   ];
-  jjScript = pkgs.writeScriptBin "jj" ''
-    #!/usr/bin/env bash
-    # Conf:  ${jjConfig}
 
-    env XDG_CONFIG_HOME="${xdgDir}" ${jjBin} "$@"
-  '';
+  jjWrapped = pkgs.symlinkJoin {
+    name = "jj";
+    paths = [ jjPkg ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/jj \
+      --set XDG_CONFIG_HOME "${xdgDir}"
+      '';
+  };
 in
 {
   config = {
-    environment.systemPackages = [ jjScript ];
+    environment.systemPackages = [ jjWrapped ];
   };
 }

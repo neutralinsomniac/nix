@@ -1,19 +1,35 @@
-{ pkgs
-, pkgsUnstable
+{ inputs
+, pkgs
 , ...
 }:
 let
+  helixPkg = inputs.helix.packages.x86_64-linux.default;
+
   tomlFmt = pkgs.formats.toml { };
-  helixBin = "${pkgsUnstable.helix}/bin/hx";
 
   helixConfig = tomlFmt.generate "config.toml" {
-    theme = "acme";
+    theme = "carbonfox";
     editor = {
-      mouse = true;
+      bufferline = "multiple";
+      line-number = "relative";
+      soft-wrap.enable = true;
+      idle-timeout = 0;
+      whitespace.render.newline = "all";
       cursor-shape = {
         insert = "bar";
         normal = "block";
         select = "underline";
+      };
+      inline-diagnostics = {
+        cursor-line = "hint";
+        other-lines = "error";
+      };
+    };
+    keys = {
+      normal = {
+       "space".F = "file_picker_in_current_directory";
+        left = ":buffer-previous";
+        right = ":buffer-next";
       };
     };
   };
@@ -24,15 +40,19 @@ let
       path = helixConfig;
     }
   ];
-  hxScript = pkgs.writeScriptBin "hx" ''
-    #!/usr/bin/env bash
-    # Conf:  ${helixConfig}
 
-    env XDG_CONFIG_HOME="${xdgDir}" ${helixBin} "$@"
-  '';
+  helixWrapped = pkgs.symlinkJoin {
+    name = "hx";
+    paths = [ helixPkg ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/hx \
+      --set XDG_CONFIG_HOME "${xdgDir}"
+      '';
+  };
 in
 {
   config = {
-    environment.systemPackages = [ hxScript ];
+    environment.systemPackages = [ helixWrapped ];
   };
 }
