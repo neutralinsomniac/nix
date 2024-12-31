@@ -7,6 +7,7 @@ let
 
   ghosttyConfig = pkgs.writeText "config" ''
   gtk-single-instance = true
+  theme = carbonfox
   '';
 
   xdgDir = pkgs.linkFarm "ghostty-config" [
