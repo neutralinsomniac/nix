@@ -102,6 +102,7 @@
 
   environment.variables = {
     EDITOR = "hx";
+    PAGER = "less -F";
   };
 
   # direnv
