@@ -31,7 +31,7 @@ let
         indent("JJ:     ", diff.stat(72)),
       ),
     )"""
-    '';
+  '';
 
   xdgDir = pkgs.linkFarm "jj-config" [
     {
@@ -47,7 +47,7 @@ let
     postBuild = ''
       wrapProgram $out/bin/jj \
       --set XDG_CONFIG_HOME "${xdgDir}"
-      '';
+    '';
   };
 in
 {
