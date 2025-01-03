@@ -8,6 +8,8 @@
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
     ghostty = {
       url = "github:ghostty-org/ghostty";
     };
@@ -31,7 +33,7 @@
       specialArgs = { inherit inputs; };
       modules = [ 
         { networking.hostName = hostName; }
-        ./hw/${hostName}.nix
+        ./hw/${hostName}
         ./configuration.nix
         nix-index-database.nixosModules.nix-index
         { programs.nix-index-database.comma.enable = true; }
