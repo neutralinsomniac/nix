@@ -26,7 +26,7 @@
   let
     lib = nixpkgs.lib;
   in {
-    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" ] (hostName: lib.nixosSystem {
+    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" "theseus" ] (hostName: lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [ 
