@@ -15,6 +15,7 @@
       "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock origin
       "nngceckbapebfimnlniiiahkandclblb" # bitwarden
       "nlffgllnjjkheddehpolbanogdeaogbc" # backspace to go back
+      "fnaicdffflnofjppbagibeoednhnbjhg" # floccus
     ];
   };
 }
