@@ -70,6 +70,7 @@
 
   # Enable sound with pipewire.
   security.rtkit.enable = true;
+  hardware.alsa.enablePersistence = true; # restore volume for non-pipewire-managed card settings
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -124,6 +125,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    alsa-utils
     bitwarden-desktop
     cargo
     chromium
