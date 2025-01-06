@@ -1,9 +1,11 @@
 { inputs
 , pkgs
+, pkgsUnstable
 , ...
 }:
 let
-  helixPkg = inputs.helix.packages.x86_64-linux.default;
+  # helixPkg = inputs.helix.packages.x86_64-linux.default;
+  helixPkg = pkgsUnstable.helix;
 
   helixConfig = pkgs.writeText "config.toml" ''
     theme = "carbonfox"
