@@ -1,7 +1,7 @@
 { ... }: {
   imports = [
     ./chromium.nix
-    ./docker.nix
+    ./distrobox.nix
     ./git.nix
     ./ghostty.nix
     ./helix.nix
