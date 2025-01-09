@@ -141,7 +141,9 @@
     signal-desktop
     spotify
     tmux
+    unzip
     vim
+    wget
     wl-clipboard
     yt-dlp
   ];
