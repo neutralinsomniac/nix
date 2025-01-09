@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    # ../../configs/renoise.nix
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
   ];
   config = {
