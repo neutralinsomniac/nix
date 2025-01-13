@@ -69,8 +69,8 @@
   };
 
   # Enable sound with pipewire.
+  # hardware.alsa.enablePersistence = true; # restore volume for non-pipewire-managed card settings
   security.rtkit.enable = true;
-  hardware.alsa.enablePersistence = true; # restore volume for non-pipewire-managed card settings
   services.pipewire = {
     enable = true;
     alsa.enable = true;
