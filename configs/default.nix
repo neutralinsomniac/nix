@@ -9,5 +9,6 @@
     ./ssh.nix
     ./steam.nix
     ./tailscale.nix
+    # ./wireplumber.nix
   ];
 }
