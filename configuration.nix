@@ -113,6 +113,7 @@
     interactiveShellInit = ''
       source <(jj util completion bash)
       source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
+      export PATH="$HOME/.local/bin:$PATH"
     '';
   };
 
