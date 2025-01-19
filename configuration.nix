@@ -137,6 +137,7 @@
     mosh
     mpv
     ncdu
+    pipx
     python313
     rustc
     signal-desktop
