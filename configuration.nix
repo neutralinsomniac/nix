@@ -127,16 +127,21 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     alsa-utils
+    binwalk
     bitwarden-desktop
     cargo
     chromium
     clang
     discord
+    file
+    gh
     go
     moonlight-qt
     mosh
     mpv
     ncdu
+    nixpkgs-review
+    p7zip
     pipx
     python313
     rustc
