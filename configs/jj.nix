@@ -15,6 +15,9 @@ let
     default-command = "log"
     diff.format = "git"
 
+    [git]
+    subprocess = true
+
     [aliases]
     shortlog = ["log", "-n", "20"]
     up = ["rebase", "-b", "@", "-d", "trunk()"]
