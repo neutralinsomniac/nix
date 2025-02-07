@@ -21,6 +21,11 @@
     musnix  = {
       url = "github:musnix/musnix";
     };
+
+    ida-pro-overlay = {
+      url = "github:msanft/ida-pro-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{

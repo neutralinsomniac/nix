@@ -123,6 +123,10 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  nixpkgs.overlays = [
+    inputs.ida-pro-overlay.overlays.default
+  ];
+
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
     # Add any missing dynamic libraries for unpackaged programs
@@ -132,6 +136,13 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # (callPackage ida-pro {
+    #     # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
+    #     runfile = fetchurl {
+    #       url = "https://pintobyte.com/tmp/ida-pro_90sp1_x64linux.run";
+    #       hash = "sha256-wOLV9BD4pKN0W7IZ2CHWkM4XaKXOCiXobgwwwf5ZnHE=";
+    #     };
+    # })
     alsa-utils
     binwalk
     bitwarden-desktop
