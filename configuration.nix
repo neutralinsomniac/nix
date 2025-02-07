@@ -140,6 +140,7 @@
     clang
     discord
     file
+    gdb
     gh
     go
     moonlight-qt
@@ -153,8 +154,10 @@
     rustc
     signal-desktop
     spotify
+    tidal-hifi
     tmux
     unzip
+    vdhcoapp
     vim
     wget
     wl-clipboard
