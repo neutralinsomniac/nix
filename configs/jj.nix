@@ -49,7 +49,7 @@ let
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/jj \
-      --prefix XDG_CONFIG_DIRS : "${xdgDir}"
+      --add-flags "--config-file ${xdgDir}/jj/config.toml"
     '';
   };
 in
