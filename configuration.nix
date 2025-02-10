@@ -136,13 +136,15 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # (callPackage ida-pro {
-    #     # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
-    #     runfile = fetchurl {
-    #       url = "https://pintobyte.com/tmp/ida-pro_90sp1_x64linux.run";
-    #       hash = "sha256-wOLV9BD4pKN0W7IZ2CHWkM4XaKXOCiXobgwwwf5ZnHE=";
-    #     };
-    # })
+
+    (callPackage ida-pro {
+     # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
+     runfile = fetchurl {
+        url = "https://pintobyte.com/tmp/ida-pro_90sp1_x64linux.run";
+        hash = "sha256-wOLV9BD4pKN0W7IZ2CHWkM4XaKXOCiXobgwwwf5ZnHE=";
+      };
+    })
+
     alsa-utils
     binwalk
     bitwarden-desktop
