@@ -155,6 +155,7 @@
     file
     gdb
     gh
+    ghostty
     go
     moonlight-qt
     mosh

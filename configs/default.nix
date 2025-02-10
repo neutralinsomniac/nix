@@ -3,7 +3,7 @@
     ./chromium.nix
     ./distrobox.nix
     ./git.nix
-    ./ghostty.nix
+    # ./ghostty.nix
     ./helix.nix
     ./jj.nix
     # ./openra.nix
