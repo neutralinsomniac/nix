@@ -23,7 +23,7 @@ let
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/ghostty \
-      --set XDG_CONFIG_HOME "${xdgDir}"
+      --prefix XDG_CONFIG_DIRS : "${xdgDir}"
       '';
   };
 in
