@@ -51,7 +51,7 @@ let
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/hx \
-      --prefix XDG_CONFIG_DIRS : "${xdgDir}"
+      --add-flags "--config ${xdgDir}/helix/config.toml"
     '';
   };
 in
