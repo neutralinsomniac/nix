@@ -148,6 +148,7 @@
     alsa-utils
     binwalk
     bitwarden-desktop
+    blanket
     cargo
     chromium
     clang
