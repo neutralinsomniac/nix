@@ -95,7 +95,7 @@
   users.users.jeremy = {
     isNormalUser = true;
     description = "jeremy";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" ];
     packages = with pkgs; [
     ];
   };
