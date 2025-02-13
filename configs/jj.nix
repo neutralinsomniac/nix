@@ -23,6 +23,7 @@ let
     up = ["rebase", "-b", "@", "-d", "trunk()"]
     a = ["log", "-r", "all()"]
     arst = ["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]
+    flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
 
     [templates]
     draft_commit_description = """
@@ -48,7 +49,7 @@ let
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/jj \
-      --add-flags "--config-file ${xdgDir}/jj/config.toml"
+      --set JJ_CONFIG "${xdgDir}/jj/"
     '';
   };
 in
