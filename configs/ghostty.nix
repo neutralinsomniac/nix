@@ -3,11 +3,14 @@
 , ...
 }:
 let
-  ghosttyPkg = inputs.ghostty.packages.x86_64-linux.default;
+  ghosttyPkg = inputs.ghostty-mjrochford.packages.x86_64-linux.default;
+  # ghosttyPkg = inputs.ghostty.packages.x86_64-linux.default;
+  # ghosttyPkg = pkgs.ghostty;
 
   ghosttyConfig = pkgs.writeText "config" ''
     gtk-single-instance = true
     theme = carbonfox
+    font-family = 0xProto
   '';
 
   xdgDir = pkgs.linkFarm "ghostty-config" [

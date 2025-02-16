@@ -14,6 +14,11 @@
       url = "github:ghostty-org/ghostty";
     };
 
+    # Remove once this PR is merged
+    ghostty-mjrochford = {
+      url = "github:mjrochford/ghostty/xdg-system-config";
+    };
+
     helix = {
       url = "github:helix-editor/helix";
     };
