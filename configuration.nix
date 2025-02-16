@@ -145,6 +145,7 @@
       };
     })
 
+    _0xproto
     alsa-utils
     binwalk
     bitwarden-desktop
