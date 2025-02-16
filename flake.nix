@@ -14,7 +14,7 @@
       url = "github:ghostty-org/ghostty";
     };
 
-    # Remove once this PR is merged
+    # Remove once this PR (https://github.com/ghostty-org/ghostty/pull/4845) is merged
     ghostty-mjrochford = {
       url = "github:mjrochford/ghostty/xdg-system-config";
     };
