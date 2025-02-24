@@ -150,6 +150,7 @@
     binwalk
     bitwarden-desktop
     blanket
+    canon-cups-ufr2
     cargo
     chromium
     clang
