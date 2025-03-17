@@ -7,6 +7,7 @@
     ./helix.nix
     ./jj.nix
     # ./openra.nix
+    # ./renoise.nix
     ./ssh.nix
     ./steam.nix
     ./tailscale.nix
