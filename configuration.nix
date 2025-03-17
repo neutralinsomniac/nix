@@ -155,6 +155,7 @@
     chromium
     clang
     discord
+    ffmpeg
     file
     gdb
     gh
