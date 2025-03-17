@@ -95,7 +95,7 @@
   users.users.jeremy = {
     isNormalUser = true;
     description = "jeremy";
-    extraGroups = [ "networkmanager" "wheel" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" "audio" ];
     packages = with pkgs; [
     ];
   };
@@ -159,6 +159,7 @@
     gdb
     gh
     go
+    gopls
     moonlight-qt
     mosh
     mpv
