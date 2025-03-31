@@ -146,6 +146,7 @@
     })
 
     _0xproto
+    aircrack-ng
     alsa-utils
     binwalk
     bitwarden-desktop
@@ -155,6 +156,9 @@
     chromium
     clang
     discord
+    dsniff
+    ethtool
+    ettercap
     ffmpeg
     file
     gdb
@@ -172,6 +176,7 @@
     rustc
     signal-desktop
     spotify
+    tcpdump
     tidal-hifi
     tmux
     tytools # for uploading firmware to m8
@@ -179,6 +184,7 @@
     vdhcoapp
     vim
     wget
+    wireshark
     wl-clipboard
     yt-dlp
   ];
