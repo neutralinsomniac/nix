@@ -11,6 +11,7 @@
     ./ssh.nix
     ./steam.nix
     ./tailscale.nix
+    ./virtualbox.nix
     # ./wireplumber.nix
   ];
 }
