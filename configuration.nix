@@ -153,6 +153,7 @@
     blanket
     canon-cups-ufr2
     cargo
+    catgirl
     chromium
     clang
     discord
