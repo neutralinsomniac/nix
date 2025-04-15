@@ -151,6 +151,7 @@
     binwalk
     bitwarden-desktop
     blanket
+    caligula
     canon-cups-ufr2
     cargo
     catgirl
