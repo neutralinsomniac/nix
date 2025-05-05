@@ -26,7 +26,7 @@ let
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/ghostty \
-      --prefix XDG_CONFIG_DIRS : "${xdgDir}"
+      --add-flags "--config-file=${xdgDir}/ghostty/config"
       '';
   };
 in
