@@ -18,11 +18,14 @@ let
     [git]
     subprocess = true
 
+    [revset-aliases]
+    'closest_bookmark(to)' = 'heads(::to & bookmarks())'
+
     [aliases]
     shortlog = ["log", "-n", "20"]
     up = ["rebase", "-b", "@", "-d", "trunk()"]
     a = ["log", "-r", "all()"]
-    arst = ["bookmark", "move", "--from", "heads(::@- & bookmarks())", "--to", "@-"]
+    tug = ["bookmark", "move", "--from", "closest_bookmark(@-)", "--to", "@-"]
     flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
 
     [templates]
