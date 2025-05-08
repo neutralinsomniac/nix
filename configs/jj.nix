@@ -31,6 +31,7 @@ let
     tug = ["bookmark", "move", "--from", "closest_bookmark(@-)", "--to", "@-"]
     flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
     ra = ["rebase", "-b", "all:author('neutral@fastmail.com') & mutable() & heads(::)", "-d", "trunk()"]
+    fa = ["git", "fetch", "--all-remotes"]
 
     [templates]
     draft_commit_description = """

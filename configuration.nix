@@ -171,6 +171,7 @@
     mosh
     mpv
     ncdu
+    nil
     nixpkgs-review
     p7zip
     pipx
