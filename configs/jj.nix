@@ -14,6 +14,7 @@ let
     email = "neutral@fastmail.com"
 
     [ui]
+    bookmark-list-sort-keys = ["committer-date-"]
     default-command = "log"
     diff.format = "git"
 
