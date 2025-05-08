@@ -1,9 +1,11 @@
-{ pkgs
+{ inputs
+, pkgs
 , pkgsUnstable
 , ...
 }:
 let
-  jjPkg = pkgsUnstable.jujutsu;
+  # jjPkg = pkgsUnstable.jujutsu;
+  jjPkg = inputs.jujutsu.packages.x86_64-linux.default;
 
   jjConfig = pkgs.writeText "config.toml"
     ''

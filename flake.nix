@@ -23,6 +23,10 @@
       url = "github:helix-editor/helix";
     };
 
+    jujutsu = {
+      url = "github:jj-vcs/jj";
+    };
+
     musnix  = {
       url = "github:musnix/musnix";
     };
