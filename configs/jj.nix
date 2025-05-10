@@ -1,11 +1,10 @@
-{ inputs
-, pkgs
+{ pkgs
 , pkgsUnstable
 , ...
 }:
 let
-  # jjPkg = pkgsUnstable.jujutsu;
-  jjPkg = inputs.jujutsu.packages.x86_64-linux.default;
+  jjPkg = pkgsUnstable.jujutsu;
+  # jjPkg = inputs.jujutsu.packages.x86_64-linux.default;
 
   jjConfig = pkgs.writeText "config.toml"
     ''
@@ -17,9 +16,6 @@ let
     bookmark-list-sort-keys = ["committer-date-"]
     default-command = "log"
     diff.format = "git"
-
-    [git]
-    subprocess = true
 
     [revset-aliases]
     'closest_bookmark(to)' = 'heads(::to & bookmarks())'
