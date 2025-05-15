@@ -19,6 +19,7 @@ let
 
     [revset-aliases]
     'closest_bookmark(to)' = 'heads(::to & bookmarks())'
+    'only(from)' = '::from ~ ::trunk()'
 
     [aliases]
     shortlog = ["log", "-n", "20"]
