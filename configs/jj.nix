@@ -15,7 +15,7 @@ let
     [ui]
     bookmark-list-sort-keys = ["committer-date-"]
     default-command = "log"
-    diff.format = "git"
+    diff-formatter = ":git"
 
     [revset-aliases]
     'closest_bookmark(to)' = 'heads(::to & bookmarks())'
@@ -29,6 +29,7 @@ let
     flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
     ra = ["rebase", "-b", "all:author('neutral@fastmail.com') & mutable() & heads(::)", "-d", "trunk()"]
     fa = ["git", "fetch", "--all-remotes"]
+    incoming = ["log", "-r", "@..trunk()"]
 
     [templates]
     draft_commit_description = """
