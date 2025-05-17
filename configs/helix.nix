@@ -7,8 +7,8 @@ let
   helixPkg = pkgsUnstable.helix;
 
   helixConfig = pkgs.writeText "config.toml" ''
-    # theme = "carbonfox"
-    theme = "acme"
+    theme = "carbonfox"
+    # theme = "acme"
 
     [editor]
     bufferline = "multiple"
