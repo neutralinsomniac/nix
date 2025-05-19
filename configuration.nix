@@ -207,7 +207,7 @@
 
   # Open ports in the firewall.
   # 39849 = lxst
-  networking.firewall.allowedTCPPorts = [ 39849 ];
+  networking.firewall.allowedTCPPorts = [ 39849 8000 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
