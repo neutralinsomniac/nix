@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, ... }:
 
 {
   imports = [
@@ -13,6 +13,6 @@
     hardware.bluetooth.enable = true;
     # until the sddm issue gets fixed
     services.fprintd.enable = false;
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_14;
+    # boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_14;
   };
 }
