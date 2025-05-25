@@ -2,7 +2,7 @@
   description = "neutralinsomniac's nix config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
