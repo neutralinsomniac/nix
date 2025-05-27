@@ -165,6 +165,7 @@
     file
     gdb
     gh
+    ghidra
     go
     gopls
     moonlight-qt
