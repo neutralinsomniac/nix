@@ -33,6 +33,7 @@ let
     ra = ["rebase", "-b", "all:author('neutral@fastmail.com') & mutable() & heads(::)", "-d", "trunk()"]
     fa = ["git", "fetch", "--all-remotes"]
     incoming = ["log", "-r", "@..trunk()"]
+    pn = ["git", "push", "--allow-new"]
 
     [templates]
     draft_commit_description = """
