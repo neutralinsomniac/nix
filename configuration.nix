@@ -153,7 +153,6 @@
     blanket
     caligula
     canon-cups-ufr2
-    cargo
     catgirl
     chromium
     clang
@@ -177,7 +176,6 @@
     p7zip
     pipx
     python313
-    rustc
     signal-desktop
     spotify
     tcpdump
