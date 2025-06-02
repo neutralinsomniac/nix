@@ -176,6 +176,7 @@
     nixpkgs-review
     p7zip
     pipx
+    protobuf
     python313
     signal-desktop
     spotify
