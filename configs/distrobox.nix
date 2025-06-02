@@ -1,4 +1,5 @@
 { pkgs
+, lib
 , ...
 }:
 {
@@ -7,5 +8,6 @@
     dockerCompat = true;
   };
 
+  security.lsm = lib.mkForce [ ];
   environment.systemPackages = [ pkgs.distrobox ];
 }
