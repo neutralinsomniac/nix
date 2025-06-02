@@ -168,6 +168,8 @@
     ghidra
     go
     gopls
+    man-pages
+    man-pages-posix
     moonlight-qt
     mosh
     mpv
