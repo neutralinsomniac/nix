@@ -61,6 +61,8 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [ pkgs.cnijfilter2 ];
+
   # discover network printers
   services.avahi = {
     enable = true;
@@ -152,7 +154,6 @@
     bitwarden-desktop
     blanket
     caligula
-    canon-cups-ufr2
     catgirl
     chromium
     clang
