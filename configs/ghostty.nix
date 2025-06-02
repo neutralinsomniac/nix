@@ -10,7 +10,7 @@ let
   ghosttyConfig = pkgs.writeText "config" ''
     gtk-single-instance = true
     theme = carbonfox
-    font-family = 0xProto
+    font-family = "0xProto NL"
   '';
 
   xdgDir = pkgs.linkFarm "ghostty-config" [
