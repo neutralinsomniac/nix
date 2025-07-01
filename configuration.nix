@@ -142,8 +142,8 @@
     (callPackage ida-pro {
      # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
      runfile = fetchurl {
-        url = "https://pintobyte.com/tmp/ida-pro_90sp1_x64linux.run";
-        hash = "sha256-wOLV9BD4pKN0W7IZ2CHWkM4XaKXOCiXobgwwwf5ZnHE=";
+        url = "https://pintobyte.com/tmp/ida-pro_91_x64linux.run";
+        hash = "sha256-j/CAIr46DvaTqePqAQENE1aybP3Lvn/daNAbPJcA+eI=";
       };
     })
 

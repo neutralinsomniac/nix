@@ -32,7 +32,7 @@
     };
 
     ida-pro-overlay = {
-        url = "github:msanft/ida-pro-overlay/v9.0.0.241217";
+        url = "github:msanft/ida-pro-overlay/v9.1.0.250226";
         inputs.nixpkgs.follows = "nixpkgs";
     };
 
