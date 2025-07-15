@@ -56,6 +56,7 @@
         ./configuration.nix
         nix-index-database.nixosModules.nix-index
         { programs.nix-index-database.comma.enable = true; }
+        { system.configurationRevision = self.rev or "dirty"; }
       ];
     });
   };
