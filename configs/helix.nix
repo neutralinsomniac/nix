@@ -38,6 +38,7 @@ let
 
     [keys.normal.space]
     F = "file_picker_in_current_directory"
+    B = ":echo %sh{git blame -L %{cursor_line},+1 %{buffer_name}}"
   '';
 
   xdgDir = pkgs.linkFarm "helix-config" [
