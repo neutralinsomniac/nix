@@ -227,6 +227,8 @@
   system.rebuild.enableNg = true;
 
   nix.settings.experimental-features = [ "nix-command" "flakes"];
+  nix.settings.trusted-users = [ "jeremy" ];
+
   # nix.settings.auto-optimise-store = true;
   # nix.gc = {
   #   automatic = true;
