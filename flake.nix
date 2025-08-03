@@ -10,6 +10,9 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
     ghostty = {
       url = "github:ghostty-org/ghostty";
     };
@@ -47,11 +50,12 @@
   let
     lib = nixpkgs.lib;
   in {
-    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" "theseus" ] (hostName: lib.nixosSystem {
+    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" "theseus" "corp" ] (hostName: lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [ 
         { networking.hostName = hostName; }
+        inputs.disko.nixosModules.disko
         ./hw/${hostName}
         ./configuration.nix
         nix-index-database.nixosModules.nix-index

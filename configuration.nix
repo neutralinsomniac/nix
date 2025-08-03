@@ -98,6 +98,7 @@
     isNormalUser = true;
     description = "jeremy";
     extraGroups = [ "networkmanager" "wheel" "dialout" "audio" ];
+    initialPassword = "password!";
     # packages = with pkgs; [
     # ];
   };

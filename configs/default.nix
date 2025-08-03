@@ -1,7 +1,6 @@
 { ... }: {
   imports = [
     ./chromium.nix
-    ./disk-config.nix # for nixos-anywhere
     ./distrobox.nix
     ./git.nix
     ./ghostty.nix
