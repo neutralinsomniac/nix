@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, inputs, pkgs, ... }:
+{ config, lib, inputs, pkgs, ... }:
 
 {
   # this allows you to access `pkgsUnstable` anywhere in your config
@@ -208,7 +208,8 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  services.openssh.enable = true;
+  systemd.services.sshd.wantedBy = lib.mkForce [ ];
 
   # Open ports in the firewall.
   # 39849 = lxst
