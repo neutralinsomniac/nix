@@ -183,6 +183,7 @@
     protobuf
     python313
     signal-desktop
+    sops
     spotify
     tcpdump
     tidal-hifi
