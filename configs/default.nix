@@ -10,8 +10,9 @@
     # ./renoise.nix
     ./ssh.nix
     ./steam.nix
+    ./virt-manager.nix
     ./tailscale.nix
-    ./virtualbox.nix
+    # ./virtualbox.nix
     # ./wireplumber.nix
   ];
 }
