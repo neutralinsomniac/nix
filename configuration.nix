@@ -181,6 +181,7 @@
     pipx
     protobuf
     python313
+    ssh-to-age
     signal-desktop
     sops
     spotify
