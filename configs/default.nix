@@ -6,6 +6,7 @@
     ./ghostty.nix
     ./helix.nix
     ./jj.nix
+    ./nh.nix
     # ./openra.nix
     # ./renoise.nix
     ./ssh.nix
