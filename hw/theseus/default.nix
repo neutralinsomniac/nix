@@ -7,8 +7,9 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
+    ./hardware-configuration.nix
+    ./disable-wireless-powersave.nix
   ];
   config = {
     hardware.framework.amd-7040.preventWakeOnAC = true;
