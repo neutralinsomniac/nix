@@ -16,5 +16,6 @@
     ./tailscale.nix
     # ./virtualbox.nix
     # ./wireplumber.nix
+    ./vm.nix
   ];
 }
