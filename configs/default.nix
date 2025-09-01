@@ -13,7 +13,7 @@
     ./ssh.nix
     ./steam.nix
     ./virt-manager.nix
-    ./tailscale.nix
+    # ./tailscale.nix
     # ./virtualbox.nix
     # ./wireplumber.nix
     ./vm.nix
