@@ -7,5 +7,8 @@
     ./disk-config.nix
   ];
   config = {
+    boot.kernelParams = [
+      "usbcore.autosuspend=-1"
+    ];
   };
 }
