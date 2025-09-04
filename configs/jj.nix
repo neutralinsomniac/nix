@@ -31,6 +31,7 @@ let
     shortlog = ["log", "-n", "20"]
     up = ["rebase", "-b", "@", "-d", "trunk()"]
     a = ["log", "-r", "all()"]
+    l = ["log", '-r', 'roots(trunk()..@)-::(trunk()|@)']
     tug = ["bookmark", "move", "--from", "closest_bookmark(@-)", "--to", "@-"]
     flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
     ra = ["rebase", "-b", "author('neutral@fastmail.com') & mutable() & heads(::)", "-d", "trunk()"]
