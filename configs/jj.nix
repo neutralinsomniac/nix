@@ -22,6 +22,7 @@ let
 
     [git]
     colocate = true
+    write-change-id-header = true
 
     [revset-aliases]
     'closest_bookmark(to)' = 'heads(::to & bookmarks())'
