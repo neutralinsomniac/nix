@@ -177,6 +177,7 @@
     mpv
     ncdu
     nil
+    nixfmt-rfc-style
     nixpkgs-review
     p7zip
     pipx
