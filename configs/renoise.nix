@@ -1,7 +1,7 @@
 {
-  inputs
-, pkgs
-, ...
+  inputs,
+  pkgs,
+  ...
 }:
 {
   imports = [ inputs.musnix.nixosModules.musnix ];

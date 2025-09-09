@@ -9,7 +9,11 @@
         };
       }
 
-      { push = { default = "current"; }; }
+      {
+        push = {
+          default = "current";
+        };
+      }
     ];
   };
 }

@@ -1,7 +1,8 @@
-{ inputs
-, pkgs
-, pkgsUnstable
-, ...
+{
+  inputs,
+  pkgs,
+  pkgsUnstable,
+  ...
 }:
 let
   # helixPkg = inputs.helix.packages.x86_64-linux.default;

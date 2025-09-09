@@ -12,7 +12,11 @@
     # virtualisation.useNixStoreImage = true;
 
     virtualisation.forwardPorts = [
-      { from = "host"; host.port = 2222; guest.port = 22; }
+      {
+        from = "host";
+        host.port = 2222;
+        guest.port = 22;
+      }
     ];
 
     virtualisation.qemu.options = [

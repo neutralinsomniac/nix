@@ -2,7 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, lib, inputs, pkgs, ... }:
+{
+  config,
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
 
 {
   # this allows you to access `pkgsUnstable` anywhere in your config
@@ -11,11 +17,10 @@
     inherit (config.nixpkgs) config;
   };
 
-  imports =
-    [
-      ./wm/plasma.nix
-      ./configs
-    ];
+  imports = [
+    ./wm/plasma.nix
+    ./configs
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -98,7 +103,12 @@
   users.users.jeremy = {
     isNormalUser = true;
     description = "jeremy";
-    extraGroups = [ "networkmanager" "wheel" "dialout" "audio" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "dialout"
+      "audio"
+    ];
     initialPassword = "password!";
     # packages = with pkgs; [
     # ];
@@ -133,8 +143,8 @@
 
   programs.nix-ld.enable = true;
   # programs.nix-ld.libraries = with pkgs; [
-    # Add any missing dynamic libraries for unpackaged programs
-    # here, NOT in environment.systemPackages
+  # Add any missing dynamic libraries for unpackaged programs
+  # here, NOT in environment.systemPackages
   # ];
 
   # List packages installed in system profile. To search, run:
@@ -142,8 +152,8 @@
   environment.systemPackages = with pkgs; [
 
     (callPackage ida-pro {
-     # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
-     runfile = fetchurl {
+      # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
+      runfile = fetchurl {
         url = "https://pintobyte.com/tmp/ida-pro_91_x64linux.run";
         hash = "sha256-j/CAIr46DvaTqePqAQENE1aybP3Lvn/daNAbPJcA+eI=";
       };
@@ -216,7 +226,10 @@
 
   # Open ports in the firewall.
   # 39849 = lxst
-  networking.firewall.allowedTCPPorts = [ 39849 8000 ];
+  networking.firewall.allowedTCPPorts = [
+    39849
+    8000
+  ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -231,7 +244,10 @@
 
   system.rebuild.enableNg = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   nix.settings.trusted-users = [ "jeremy" ];
 
   # nix.settings.auto-optimise-store = true;

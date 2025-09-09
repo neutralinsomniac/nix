@@ -1,4 +1,5 @@
-{ ... }: {
+{ ... }:
+{
   programs.firefox = {
     enable = true;
     preferences = {
@@ -22,7 +23,8 @@
         };
         "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
           "installation_mode" = "force_installed";
-          "install_url" = "https://addons.mozilla.org/firefox/downloads/file/4407804/bitwarden_password_manager-2024.12.3.xpi";
+          "install_url" =
+            "https://addons.mozilla.org/firefox/downloads/file/4407804/bitwarden_password_manager-2024.12.3.xpi";
         };
       };
       FirefoxHome = {

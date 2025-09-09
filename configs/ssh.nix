@@ -1,6 +1,7 @@
-{ pkgs
-, pkgsUnstable
-, ...
+{
+  pkgs,
+  pkgsUnstable,
+  ...
 }:
 let
   sshPkg = pkgs.openssh;

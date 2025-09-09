@@ -1,6 +1,7 @@
-{ inputs
-, pkgs
-, ...
+{
+  inputs,
+  pkgs,
+  ...
 }:
 let
   # ghosttyPkg = inputs.ghostty-mjrochford.packages.x86_64-linux.default;
@@ -27,7 +28,7 @@ let
     postBuild = ''
       wrapProgram $out/bin/ghostty \
       --add-flags "--config-file=${xdgDir}/ghostty/config"
-      '';
+    '';
   };
 in
 {

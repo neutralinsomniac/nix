@@ -30,38 +30,55 @@
       url = "github:jj-vcs/jj";
     };
 
-    musnix  = {
+    musnix = {
       url = "github:musnix/musnix";
     };
 
     ida-pro-overlay = {
-        url = "github:msanft/ida-pro-overlay/v9.1.0.250226";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:msanft/ida-pro-overlay/v9.1.0.250226";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
   };
 
-  outputs = inputs@{
-    self,
-    nixpkgs,
-    nix-index-database,
-    ...
-  }:
-  let
-    lib = nixpkgs.lib;
-  in {
-    nixosConfigurations = lib.genAttrs [ "x270" "xps13" "x1" "theseus" "corp" "devnet" "micropc" "sgo" ] (hostName: lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [ 
-        { networking.hostName = hostName; }
-        inputs.disko.nixosModules.disko
-        ./hw/${hostName}
-        ./configuration.nix
-        nix-index-database.nixosModules.nix-index
-        { programs.nix-index-database.comma.enable = true; }
-        { system.configurationRevision = self.rev or "dirty"; }
-      ];
-    });
-  };
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nix-index-database,
+      ...
+    }:
+    let
+      lib = nixpkgs.lib;
+    in
+    {
+      nixosConfigurations =
+        lib.genAttrs
+          [
+            "x270"
+            "xps13"
+            "x1"
+            "theseus"
+            "corp"
+            "devnet"
+            "micropc"
+            "sgo"
+          ]
+          (
+            hostName:
+            lib.nixosSystem {
+              system = "x86_64-linux";
+              specialArgs = { inherit inputs; };
+              modules = [
+                { networking.hostName = hostName; }
+                inputs.disko.nixosModules.disko
+                ./hw/${hostName}
+                ./configuration.nix
+                nix-index-database.nixosModules.nix-index
+                { programs.nix-index-database.comma.enable = true; }
+                { system.configurationRevision = self.rev or "dirty"; }
+              ];
+            }
+          );
+    };
 }
