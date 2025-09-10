@@ -26,6 +26,7 @@ let
     [revset-aliases]
     'closest_bookmark(to)' = 'heads(::to & bookmarks())'
     'unmerged(from)' = '::from ~ ::trunk()'
+    'contains(c)' = '(bookmarks() | tags()) & c::'
 
     [aliases]
     shortlog = ["log", "-n", "20"]
@@ -38,6 +39,7 @@ let
     fa = ["git", "fetch", "--all-remotes"]
     incoming = ["log", "-r", "@..trunk()"]
     pn = ["git", "push", "--allow-new"]
+    # contains = ["log", "-r", "contains(@-)", "-T", "'self.bookmarks()'", "--no-graph"]
 
     [templates]
     draft_commit_description = """
