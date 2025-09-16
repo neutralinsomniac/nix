@@ -63,6 +63,7 @@
             "devnet"
             "micropc"
             "sgo"
+            "leviathan"
           ]
           (
             hostName:
