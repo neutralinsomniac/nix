@@ -9,5 +9,7 @@
 
   config = {
     boot.kernelPackages = pkgs.linuxPackages_latest;
+    hardware.asus.flow.gv302x.amdgpu.psr.enable = false;
+    boot.kernelParams = [ "amdgpu.dcdebugmask=0x600" ];
   };
 }
