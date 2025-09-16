@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   imports = [
@@ -8,5 +8,6 @@
   ];
 
   config = {
+    boot.kernelPackages = pkgs.linuxPackages_latest;
   };
 }
