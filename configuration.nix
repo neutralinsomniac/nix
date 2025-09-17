@@ -169,6 +169,7 @@
     catgirl
     chromium
     clang
+    darktable
     discord
     dsniff
     ethtool
