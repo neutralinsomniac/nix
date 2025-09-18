@@ -202,6 +202,7 @@
     tidal-hifi
     tmux
     tytools # for uploading firmware to m8
+    ultimate-oldschool-pc-font-pack
     unzip
     vdhcoapp
     vim
