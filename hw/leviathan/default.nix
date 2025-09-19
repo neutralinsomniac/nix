@@ -97,8 +97,8 @@
     # we only have one graphics card; no need for this
     services.supergfxd.enable = false;
 
-    # this driver is buggy as heck (maybe not with above patches?)
-    # boot.blacklistedKernelModules = [ "hid_asus" ];
+    # this driver is buggy as heck
+    boot.blacklistedKernelModules = [ "hid_asus" ];
 
     hardware.bluetooth.enable = true;
   };
