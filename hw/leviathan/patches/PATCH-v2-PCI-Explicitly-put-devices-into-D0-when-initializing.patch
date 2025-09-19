@@ -1,0 +1,1663 @@
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43649198A11
+	for <linux-pci@vger.kernel.org>; Thu, 24 Apr 2025 04:32:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745469165; cv=none; b=T9bQ9g1+8qgecigIrDH+rHipFk0ESKWGCRBI+tWnzwEZS5zKCsWSxgZNnSYqCCMScShVrIi/AUuc1Jv3GxolRVHqZaDybIc/KUqoSYC41RepB4wt9Pw/W3zIesnkS/zIqAlrbz8+WzNi9doAi84pZK7lFrm46EP6+U0/3K2txck=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745469165; c=relaxed/simple;
+	bh=u6uQYJdX8Oz8Z9hjkBsp0CddLir4+K6KfWB8KSlUSmA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qCZfKMZQpRijZxcpR2KOqeLWnVL3Qsyrjd8TWYU0JSRDL27OIgg7oIMz/8oL+483E2HSRQgpHxlAeCBvgVWYP6T99kfAIp5gCqIHGvczaKRzL9lCjmDxVles8Rr0+GB1J7WmxlatrNrzcyXxVbt/4LuEApui+C2Fr6eO1+xm7wk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fxitGitN; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fxitGitN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13AE5C4CEE3;
+	Thu, 24 Apr 2025 04:32:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745469164;
+	bh=u6uQYJdX8Oz8Z9hjkBsp0CddLir4+K6KfWB8KSlUSmA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=fxitGitNAVj9r72h5ZxhZy4Jn/lrkK7td0ACpnwJ569lhMg3tt4mFs+XN3m8clYOK
+	 oIJ6UiaSZ8/ta2kkdWf/iTMqXsASZbxnq0wzN7I+BzBrlSc7cuS6bt0eWkRVz+KXXJ
+	 V1TCsOcfO0uXWUB/V3OSLMwQIS7NzyipTZzzposAPBM1OuW1SEf4xvZh0VlDC7ht3y
+	 H8Dr7+55n/RMEqlHS7IumcGgOyzd8sNKzSNvBQ3iDrNZfY93qxpDL/1q94TnDeNZA0
+	 cX7f1dHvIdT/oCYVs+XI/Xc+A3hi9jQP4SozZpBrKjFyhgoKnT8fJpGmqOQOH8IhWv
+	 xLd85eTp1rRBQ==
+From: Mario Limonciello <superm1@kernel.org>
+To: mario.limonciello@amd.com,
+	bhelgaas@google.com,
+	rafael.j.wysocki@intel.com,
+	huang.ying.caritas@gmail.com,
+	stern@rowland.harvard.edu
+Cc: linux-pci@vger.kernel.org
+Subject: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+Date: Wed, 23 Apr 2025 23:31:32 -0500
+Message-ID: <20250424043232.1848107-1-superm1@kernel.org>
+X-Mailer: git-send-email 2.43.0
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+
+From: Mario Limonciello <mario.limonciello@amd.com>
+
+AMD BIOS team has root caused an issue that NVME storage failed to come
+back from suspend to a lack of a call to _REG when NVME device was probed.
+
+commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+added support for calling _REG when transitioning D-states, but this only
+works if the device actually "transitions" D-states.
+
+commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+devices") added support for runtime PM on PCI devices, but never actually
+'explicitly' sets the device to D0.
+
+To make sure that devices are in D0 and that platform methods such as
+_REG are called, explicitly set all devices into D0 during initialization.
+
+Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI devices")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+v2:
+ * Move runtime PM calls after setting to D0
+ * Use pci_pm_power_up_and_verify_state()
+---
+ drivers/pci/pci-driver.c |  6 ------
+ drivers/pci/pci.c        | 13 ++++++++++---
+ drivers/pci/pci.h        |  1 +
+ 3 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index c8bd71a739f72..082918ce03d8a 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
+ 	pci_enable_wake(pci_dev, PCI_D0, false);
+ }
+ 
+-static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+-{
+-	pci_power_up(pci_dev);
+-	pci_update_current_state(pci_dev, PCI_D0);
+-}
+-
+ static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+ {
+ 	pci_pm_power_up_and_verify_state(pci_dev);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index e77d5b53c0cec..8d125998b30b7 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+ }
+ EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+ 
++void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
++{
++	pci_power_up(pci_dev);
++	pci_update_current_state(pci_dev, PCI_D0);
++}
++
+ /**
+  * pci_pm_init - Initialize PM functions of given PCI device
+  * @dev: PCI device to handle.
+@@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+ 	u16 status;
+ 	u16 pmc;
+ 
+-	pm_runtime_forbid(&dev->dev);
+-	pm_runtime_set_active(&dev->dev);
+-	pm_runtime_enable(&dev->dev);
+ 	device_enable_async_suspend(&dev->dev);
+ 	dev->wakeup_prepared = false;
+ 
+@@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+ 	pci_read_config_word(dev, PCI_STATUS, &status);
+ 	if (status & PCI_STATUS_IMM_READY)
+ 		dev->imm_ready = 1;
++	pci_pm_power_up_and_verify_state(dev);
++	pm_runtime_forbid(&dev->dev);
++	pm_runtime_set_active(&dev->dev);
++	pm_runtime_enable(&dev->dev);
+ }
+ 
+ static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index b81e99cd4b62a..49165b739138b 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+ void pci_dev_complete_resume(struct pci_dev *pci_dev);
+ void pci_config_pm_runtime_get(struct pci_dev *dev);
+ void pci_config_pm_runtime_put(struct pci_dev *dev);
++void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+ void pci_pm_init(struct pci_dev *dev);
+ void pci_ea_init(struct pci_dev *dev);
+ void pci_msi_init(struct pci_dev *dev);
+-- 
+2.43.0
+
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE1D52701C1
+	for <linux-pci@vger.kernel.org>; Thu, 24 Apr 2025 15:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745507246; cv=fail; b=RVAg4vzHYpwbJ0NOIP/0elIW2p6HaYDDwd7e+2zaWSE6YOMMHXn/vV/yfKAugS0oK18jR+55mPDT2QnrxM82H+Z92ZDJrFuUe2SMcmznhzJY2grfDkxmJbS+ptlTUYpbtdjr0uOLrYviYbWaOKTXx2YpigZ2TMLF66sRO/BmjZw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745507246; c=relaxed/simple;
+	bh=vhv4NCWTSHelOyHiJ+BxFQxxj4QXTgE0JHfLfEBiDbQ=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JZOKn5GikloXcci//dC/S1dsOXt0tY5g+47zZwjfUt50CAsCb7enH/UE/8ZXTC4OumLOgefKi1l8b8gCkW4EgFY0RlkcA9GmTl7p+XTAVdl3uJ+YVne/jYOqSNXDSEBXCRnHOIar8k56VyWQnzBagHV7fl/LG1ijPM+2f9gHHuc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fn5KKVZh; arc=fail smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fn5KKVZh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745507244; x=1777043244;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=vhv4NCWTSHelOyHiJ+BxFQxxj4QXTgE0JHfLfEBiDbQ=;
+  b=Fn5KKVZhNAATJFbatzc/gm0asilkwpc8f28KoLWlQiwwxRG66929Qlgq
+   gLJb7WEZIZUPblGUxdn3ZHXGPIldu4z0VDWPDbz+cgaloJKfxoooH7PD6
+   buEwycN5X95uwotuxWEeC33MnO8aZsf58smNc9RgyE2I+sEdHzxk8sZ5H
+   pQEnMnvCRAtMWRv4ahdWoiAdcFhYH5zsNS4CzdLtUg9E4qOhr4wQBIYMy
+   e3L7Z+wyTpd/f2lrwpdP6DorI5CwgyLCJ04TybMt9Ed9GTlswJu70bZcJ
+   ffmKv2Ga+0nliyK17r3XF7myY0klTe49Yc2fh50NHTSvt78cPEX0dKWeJ
+   w==;
+X-CSE-ConnectionGUID: dVVRWnuJQ3KUkoRISoT3NQ==
+X-CSE-MsgGUID: 9WguKzvxSTaqeX6QPe/joA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11413"; a="46860385"
+X-IronPort-AV: E=Sophos;i="6.15,236,1739865600"; 
+   d="scan'208";a="46860385"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 08:07:23 -0700
+X-CSE-ConnectionGUID: w46vTFalRWiKgqNBaZHL6Q==
+X-CSE-MsgGUID: jUKv4YiPShOHjg64pCEsCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,236,1739865600"; 
+   d="scan'208";a="169859515"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 08:07:23 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Thu, 24 Apr 2025 08:07:22 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Thu, 24 Apr 2025 08:07:22 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Thu, 24 Apr 2025 08:07:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GysLMJJplo+ox6sCzEd5Sq4old8OiQ0Uttul7Yq8FHvA6tB0QUyMmZIRjseK1YAbMiWIihODZ0/YvHpsLJ9ZZC3Ccr+441evjY0+ztCz7PilGfkEy+JzXd59FAxaG2fO6vArqQUfB5R4Kxc79mNan7ieiqsPQKpBwnD/9VLeE8Ku+Oc5LBW+kKSLol06jHX7cMDRhsxeaFcF7hdw6qY87Ewvi7gFWQQCcNUC7T6C0wttKKW8uQUJkbUfnuGTbBZKrZWgx5iQ+aE0235RaoCmkRNQK+JoaRZuwP0xhIEtqSiyHsq9Jed+xkl2euhttpYz6PtCRHHkfsBSgH5m7Xn/KA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nwN0095fx07dupF0Yd4sR8KoUXITKW0HlNE8ytLUe40=;
+ b=s9MnXzETbUGVTlQRjXbdzW4KFNYMn7edSTNyg5BIjgxYZ8d/vEtVzX+DH7quMcip1CUhUUEzyzxyTlMLGnIsw6+XpqZFoU2yDMNfGdqQEmtXxgOvQ9OSlNS9S5ZqDSTfFxkxRcLMmiy/Eqjgxz92WG9WtB1i7/33vLfVBo5bSLyNuM6Cupk8DJ5QlLVDyit6exxmvshrbbo7B0kb8q59rxCYLSXXxm+q6BO2ZJPwGm8shdt10G2xUPuiNYQCbaYpY8TFAum5SmwB0AcvwVnFmKQ3hLEoyskuzq1u9pSEwSuuuyVn0M5Yx37AzWP/VXypI+7998CwT5XhPWIrewtewQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW5PR11MB5810.namprd11.prod.outlook.com (2603:10b6:303:192::22)
+ by SA2PR11MB5051.namprd11.prod.outlook.com (2603:10b6:806:11f::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.27; Thu, 24 Apr
+ 2025 15:07:17 +0000
+Received: from MW5PR11MB5810.namprd11.prod.outlook.com
+ ([fe80::3a48:8c93:a074:a69b]) by MW5PR11MB5810.namprd11.prod.outlook.com
+ ([fe80::3a48:8c93:a074:a69b%7]) with mapi id 15.20.8655.033; Thu, 24 Apr 2025
+ 15:07:17 +0000
+Message-ID: <18b0cabc-6f84-45f2-97db-4f5e2a938aad@intel.com>
+Date: Thu, 24 Apr 2025 17:07:12 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+To: Mario Limonciello <superm1@kernel.org>, <mario.limonciello@amd.com>,
+	<bhelgaas@google.com>, <huang.ying.caritas@gmail.com>,
+	<stern@rowland.harvard.edu>
+CC: <linux-pci@vger.kernel.org>, <linux-pm@kernel.vger.org>, "Rafael J.
+ Wysocki" <rafael@kernel.org>
+References: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Language: en-US
+From: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>
+In-Reply-To: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: WA0P291CA0018.POLP291.PROD.OUTLOOK.COM
+ (2603:10a6:1d0:1::15) To MW5PR11MB5810.namprd11.prod.outlook.com
+ (2603:10b6:303:192::22)
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW5PR11MB5810:EE_|SA2PR11MB5051:EE_
+X-MS-Office365-Filtering-Correlation-Id: 38edb99b-f807-4a41-0335-08dd8341b419
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?YTZPbG13eE8xeDh6enlYMWF5RHBqbm9iYm5wKzlZTEErM3VhMkdwQjZKR05m?=
+ =?utf-8?B?SGVlQ2lJdjhTN2NyUDliandBbE5mTStKZ3I0bEI5QlBIWG92OTR2ZWROWGtG?=
+ =?utf-8?B?M3ZqakVlbXNZdXFPV2hiTXRYYnRmY2VtL1NnOVVySktRcGk3Qm5xbUN4NTE2?=
+ =?utf-8?B?RG0wTG5DcWRrM0tCUFFUMlZGcXMzVDgzM2JXMHlvOThXS0FxSGtmM2IvUjc5?=
+ =?utf-8?B?ZzA4N2xsSUtsMStyaVUvUTZQY28wVjBmakVvbFViWkVCQldNNjI1aHBEQWxW?=
+ =?utf-8?B?UFVlQWh5eGV3Z1JvV1Yyd3pJVkpOV0UvSEFTN09hVlRkODYrallDQmdiQVBq?=
+ =?utf-8?B?d3c1TjcrWDZYdFRCelFGUUxJRGxjKzdTcFNDSk00MXNnZzFDN25oRHNSQlRH?=
+ =?utf-8?B?Ym11MUJGMVVud1JTdHBuenNZeWVwTTlvZ0srSEJESnorcitTOExCM2F3MmZR?=
+ =?utf-8?B?OE54UVQvKzBHZ2ZKZWFwTHRkK2t4R1lNVFkyK21Bb2hURkxGRXB2TlhNUTFW?=
+ =?utf-8?B?M3UxUzB0NG9ReUcwVnBINXRMZUNKODdQaHJoWmx3b0lVOWYyNzhwTEJOc0F0?=
+ =?utf-8?B?dWozc3NIcFVMbis1bCtSb0J0YjRBQ25ycnRqZy9IcWJXNDRjNWtNMUpGeDht?=
+ =?utf-8?B?U3pob25mMkpVSVFMUXB0d0tJeUFQYWlONVQ5R1FQRTR2cFkyNTgvRVFteGdS?=
+ =?utf-8?B?MWJrcEpkMU1NblAzc0FxcE90MElrbHdmRFhBSndyS1FqaHRwMVhOU0JaV2or?=
+ =?utf-8?B?cHpBUEF5ZVlDZWwrc2loNEQvaWJUVmErKzRoUkc0eDh2MGpuZHgrenNmVldN?=
+ =?utf-8?B?a0QrTXBPcnd3eVhyRmNualZMZWxTWjZmS2ZYNnVVOEpnOHZHUzZpQjlWeTMz?=
+ =?utf-8?B?V0lJSTJtcmh2UWNpMmVJOE9qck56K0NNMHg3Vml2aWQ2cTdVd2ROY3VaMmVy?=
+ =?utf-8?B?VGhUYlJZY1BXSUFoZFhFT3o3NDFHUSswV2txR2tyRTlab1p4THlzS3l4UXlL?=
+ =?utf-8?B?K3JHaW9oaEtHQ3VocTE3RzlDTmNRUWk5eml1bmVnem9WNFBpRUNYTGpBSnVh?=
+ =?utf-8?B?YnA4azFkMCtuYThBcEE4N1lrLzJaRTdiK21nQTNHRE9tektQWi91L3gvc0tp?=
+ =?utf-8?B?NzVxMmJ6QWxnZTFYM0FGaHpnR2psRUMyVTdkaTk1cDJGVlBpY05ob3RWd3cv?=
+ =?utf-8?B?RDN1V2o1cXRaMUFBaHQ5bDFjS21zNzU4MHlTalVNZG5VTDBoaU9vYjlQWmov?=
+ =?utf-8?B?cnpKQS9sdUFDV2k2cTVjUHhNSGRhc284aEEvQ09hU0J6VldHS0RPUkFWSlRp?=
+ =?utf-8?B?emlFMms2ZWlJRmo5eEZidzBieVorZ2hWWngrSU9BcjBJZUtJQ0FSTEhHYUIr?=
+ =?utf-8?B?T0JFUzJJMEFWL1NEVUFmcUNFQ0JRNUl2TU1nSjU3NUIvRWFWR3dWNFdDdUhH?=
+ =?utf-8?B?eWgxODZEai9sZXdGUDVicXBZVmhzNno0cXpvRmNoVlJUK0dGdU9IVXpuM3pT?=
+ =?utf-8?B?dFhGS09DUWgrYkxJZmw0RnlhYmJ2MWlLL3QxN0ZwSWNnMXpNdy9QT3lDVThW?=
+ =?utf-8?B?R0xvT1V3S0Jvd1NGVEpBeHVZTVRPZ3NsQTkwMXhGdlh1d1dyUVJyeGRJbHcw?=
+ =?utf-8?B?b0hvbTEzUTBzdUMrWDlrMWdtVU1sL2YzT3l4SWdrZURZNm5yZExhbE9SejUz?=
+ =?utf-8?B?cko5Z2JLZUZsT1NhaDg0TVJBd0MzTkJ4dHJ0emswdFN2dlJjQTV4MTMwY3Vq?=
+ =?utf-8?B?U3FFK3Q2WExOd3o3RUl6WmVid09IUUpGQlRLZXhmZ2lhRm1ZMUNQdTR6cmRw?=
+ =?utf-8?B?OHJrRW1WTWlDMzVDcjVLSFdhYkgwTUNaK0h1VkhLdmpUSDZBa3JseUhXc1Ba?=
+ =?utf-8?B?dzdMcVU5cFIzNjd0OVNiT0NMbVFnSXh4YWUvU0tqTWppaW9yQ2NwUjNkNkox?=
+ =?utf-8?Q?8dq5F5soQQ4=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5810.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MUFnZGY2alhhUmNhYm5FVS81Y01qbmdSWGdvUkRYNDBPOW42bEhTc2loSlRK?=
+ =?utf-8?B?SGJlbzlCSlZNalNVSmc5YUNiNWYvdEsxN1pSc3dOa2JSWkR4L3RDNWJPMVhX?=
+ =?utf-8?B?dGZLU0RBZVVnSjJybzhLeDlma0xObFMzZzdJeEEwemN6MjZpdDhYUVNZU0pt?=
+ =?utf-8?B?TS9WcXFqNG9RZzRPc1ZET2ZrTG9sL0VIbiswNjBnaEtzdUpadWNzZ2g4WFBK?=
+ =?utf-8?B?czh5K1JVNzFIM3ZQbHlVR2NSbjUwSnFVenh4V0Z2OFZiQ0FNSEhScW9EdEhm?=
+ =?utf-8?B?bnA0OThLN2Z1b2JFdVhCcHF1SzdsM1NhY0VLbEVUOWFFN0hzcDd3OHE0K214?=
+ =?utf-8?B?NmJKWVVZWmdHdXR4bGc5ZVh6ZWZXQXA5UG44eHhXYThzSXQrckp4Z0NMUEpx?=
+ =?utf-8?B?WXlCN0xJNXhtbjB6L2FrdGhaNjdtaU5kdy84cGYreWdlaFZ5bFZaNGQxanQ0?=
+ =?utf-8?B?T3dtL3dKcG5xYi93c3BGUjA3SE1VWDVSeCtobGxzRkI0dVA5SE5aYWNoNzh1?=
+ =?utf-8?B?aFhrcCtUZDNBdlQyMGFSNllCdEpsUGtIaTIraHprUnRKSjBMd0xJdzBLVFhX?=
+ =?utf-8?B?Zk9YLzIrQ1kxaks5Ni9oV1BTTktieStoaDVIT1Z2ekF4bjFRWklDQXNoZ3l4?=
+ =?utf-8?B?Z2lCa25aYVByZHhCYW1vZ1Y3TEVmOXA4b0Q4Q0xydGVkWWF5UkRNTHlha3ZS?=
+ =?utf-8?B?aUZZSGU4cGNoVWJBeW5hS0RTZTBIRDQ2L1hBVUhJN0Z5T3pGcU9LMXAyV1dF?=
+ =?utf-8?B?UFBibHdiWFR5KzRKei9rOENVZnBHcjlBYlpjVnUvUWo3UmtRNWpjQWw3SkV1?=
+ =?utf-8?B?Qm5yY3lhM3JIalV0STB6Vy9xTVpCMEV2d3lSbHoxbjlOQnZ5TTRmZ3d5ZEUz?=
+ =?utf-8?B?MHdoREJpMnpyL1Y4QmszdldNM1BEYjJteThzM1Bmc2hpTnd3MUNsR3NBWHF4?=
+ =?utf-8?B?b1NTbWxmbVRuakNNemtuSzJuSE51UGs1K05YTFFneitrU0R4ZXgvaWtHYjJ5?=
+ =?utf-8?B?OUg3U2wyZzNVdEhhYmhLajZpR0JjV1FXTmI5RXNVbGh5aFNzTWp5eWx0L0Jo?=
+ =?utf-8?B?VzU0T3VTbnk3Y3NlTUgxU1B4ZVFxdFhtWXpZTVZYazYwOFFlcjdjTTN6MXRG?=
+ =?utf-8?B?SmJsWE4vN0JyY2pmK0NmbUpRcnlrMlJTdTJkMmUxZGhFUDhOMFRVaVZIZ3ow?=
+ =?utf-8?B?TDMwK1ZnUVRFZkwra1FpdDRYTHdMdlJOcHp4OGhpMEZQaXJSMm1FYk5JaE1t?=
+ =?utf-8?B?cm1iV0tqOTRuYm5laFo3UThibm9OTWozbGE0SGNCeEt4ZWt1N0N0STB5Nmhs?=
+ =?utf-8?B?K2w4cFBYalFSVHlibmtHWDZrbHo2Vm1JSkNYRjJOZ1ZDOTJzd0hPZFlUeHBw?=
+ =?utf-8?B?ZTRsKzUxRlhnWlpnNXB4N2tZcnhVMnROOU0wY0FtMHJOWTY5NTlNZDlYOFFE?=
+ =?utf-8?B?UWEySXg2UTZPOUN1YS94WHF3UVRPOGNEVWlrUEx6cGExNGxGMTEvQmlBZ1NJ?=
+ =?utf-8?B?Y08wdGJUWmc3WUs3T29jTElXRTVUL2M5aE1WcXkzeE1jQVgreXcwRFBJRUJo?=
+ =?utf-8?B?aVNMRkZaaWN0dnRkWHJKdlN4WHVHOEJWekNHTWRRQlhwYVI5cVR3VlFpcFVt?=
+ =?utf-8?B?S0NjL2UyR1NzTDNSc1o5WXdvdWJhRk1BR2NUZjJlY0NRWHVNbWh0a1Qrbkxn?=
+ =?utf-8?B?OVMwUEhnSkdXOFRrNmM3ZVgzb0ZNWE9hWVRqaUtCSnUzR1hvVWpobFEvNHdK?=
+ =?utf-8?B?anJZK1A4RjNQcHUzQWRCVW4zMDBzOTNTM2loY0hFN09ZTHlFWE9sZUZMRmFJ?=
+ =?utf-8?B?S29EWS9lZjRHT0w2Z3V0eSs3K0VpSGZoeDc0T1FGWStHVXM2K011TU9SZzRn?=
+ =?utf-8?B?TCtrNFhVcEZEbVhGYld0U2I1VlYrcFhJWkptaGZBckJ6bi9Kb2lsRC8va0lV?=
+ =?utf-8?B?bDhVTDNCOFA5RjkxK1MyS3dkdm5SbmpQM3VUbk5NVDRMYkpxYkdTd1Y0bkdP?=
+ =?utf-8?B?UUJ0cVJsNTM3SzBzQkRmRnlCNWFvMUJ2c20zSW85NFdSQ3Z6QXRkSEo5TmZB?=
+ =?utf-8?B?SWIvOExjd3U0bjN5VlhkMGhoNVlNR0RzQ0lZak53V1lVVHpPd01tRDRiTE1r?=
+ =?utf-8?B?TkxpWCtEZ0ZZVGJzeHZJcmFZK09heHkxVk5HeCs1VmlvWFYzSC9OVFFKRGpm?=
+ =?utf-8?B?aVE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38edb99b-f807-4a41-0335-08dd8341b419
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5810.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2025 15:07:17.7057
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: m2ExritpkTBydNOxBTeWnegOOwrkXqW4c7t1pptyFhh0XMfzBIy7HmG/Q3nKz63Z9S/etNiyA/h05fGoSc9M/SmzHF3PMHoqZWRS3ldSg1o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5051
+X-OriginatorOrg: intel.com
+
+On 4/24/2025 6:31 AM, Mario Limonciello wrote:
+> From: Mario Limonciello <mario.limonciello@amd.com>
+>
+> AMD BIOS team has root caused an issue that NVME storage failed to come
+> back from suspend to a lack of a call to _REG when NVME device was probed.
+>
+> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+> added support for calling _REG when transitioning D-states, but this only
+> works if the device actually "transitions" D-states.
+>
+> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+> devices") added support for runtime PM on PCI devices, but never actually
+> 'explicitly' sets the device to D0.
+>
+> To make sure that devices are in D0 and that platform methods such as
+> _REG are called, explicitly set all devices into D0 during initialization.
+>
+> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI devices")
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> v2:
+>   * Move runtime PM calls after setting to D0
+>   * Use pci_pm_power_up_and_verify_state()
+
+You could give me a credit for this suggestion.
+
+Anyways
+
+Reviewed-by: Rafael J. Wysocki <rafael@kernel.org>
+
+
+> ---
+>   drivers/pci/pci-driver.c |  6 ------
+>   drivers/pci/pci.c        | 13 ++++++++++---
+>   drivers/pci/pci.h        |  1 +
+>   3 files changed, 11 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index c8bd71a739f72..082918ce03d8a 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
+>   	pci_enable_wake(pci_dev, PCI_D0, false);
+>   }
+>   
+> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> -{
+> -	pci_power_up(pci_dev);
+> -	pci_update_current_state(pci_dev, PCI_D0);
+> -}
+> -
+>   static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>   {
+>   	pci_pm_power_up_and_verify_state(pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index e77d5b53c0cec..8d125998b30b7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>   
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> +{
+> +	pci_power_up(pci_dev);
+> +	pci_update_current_state(pci_dev, PCI_D0);
+> +}
+> +
+>   /**
+>    * pci_pm_init - Initialize PM functions of given PCI device
+>    * @dev: PCI device to handle.
+> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>   	u16 status;
+>   	u16 pmc;
+>   
+> -	pm_runtime_forbid(&dev->dev);
+> -	pm_runtime_set_active(&dev->dev);
+> -	pm_runtime_enable(&dev->dev);
+>   	device_enable_async_suspend(&dev->dev);
+>   	dev->wakeup_prepared = false;
+>   
+> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>   	pci_read_config_word(dev, PCI_STATUS, &status);
+>   	if (status & PCI_STATUS_IMM_READY)
+>   		dev->imm_ready = 1;
+> +	pci_pm_power_up_and_verify_state(dev);
+> +	pm_runtime_forbid(&dev->dev);
+> +	pm_runtime_set_active(&dev->dev);
+> +	pm_runtime_enable(&dev->dev);
+>   }
+>   
+>   static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index b81e99cd4b62a..49165b739138b 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>   void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>   void pci_config_pm_runtime_get(struct pci_dev *dev);
+>   void pci_config_pm_runtime_put(struct pci_dev *dev);
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>   void pci_pm_init(struct pci_dev *dev);
+>   void pci_ea_init(struct pci_dev *dev);
+>   void pci_msi_init(struct pci_dev *dev);
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73464294A0A
+	for <linux-pci@vger.kernel.org>; Thu, 24 Apr 2025 18:20:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745518811; cv=none; b=rgXqho2h4WZAJpOOUxJ1jRZlPPmPfeu6P4vAzfi4gLBszyqEHbidkNAxfyA8WF07Trbj2QGcfCK7zaYLi3wEe3wsk9sXUlAHtlgNGR3WOFJg3t0yNqH83P1QEB4THLSAAPPDXyRFRKlujlbpdpO2qNjD3YMlnu2vBDPFI3rY8Qw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745518811; c=relaxed/simple;
+	bh=b7tgNkZupRIMsLwi02FbD2f9XF7rt1RDs8p3/XiX+Kk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FtFF2k2MzE+nX4eUzbYGtgDF8PmvqlN3Jaf+R50hbccMZ7jG0tgYPf0cXhU+xm4KeR+gb+jWD+ueGXGjvmAhW1nWD0EDSsPpHCs50J6X2B737TSL45IXNNKp0i0E+ynbkTl2nBcSKV8yAz2WcCnuDoEd0YBZVCsqUCfQLODk8aA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FG0wZFj7; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FG0wZFj7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC451C4CEE3;
+	Thu, 24 Apr 2025 18:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745518811;
+	bh=b7tgNkZupRIMsLwi02FbD2f9XF7rt1RDs8p3/XiX+Kk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=FG0wZFj7Le+58aTE4yjiS8TYeb2BbGuZqTcWSHz/IPQjuSdKyhOJzOiMLtc6kGPAi
+	 CHFHOFH2iFspG/4oC5bvn5Mg2AOqWH6vHbIvFvJqi7UsmJG070yiCK8nxmaEnqAFwh
+	 OPEToOAFLDbz58/2y6t+2vGNGfaYgZLlIZXHg7mJY1Hm+pThX67S/l9oNz9Mmb1EE9
+	 Fl/HKGQhJurbdCtfe7NwnkIGVqV72CWnzoetEknV5mze06wn4quAURyJxAfhv2odHu
+	 SfzW9aNmKLrK/q04IPOohzd4vIPu/Dlc/58LkW/tC506QMuxFfYTkcJzKIUq16wy2W
+	 bITqoYE/i2n2Q==
+Message-ID: <a83ee1c6-ebf2-4fa5-b1b7-229d1093788d@kernel.org>
+Date: Thu, 24 Apr 2025 13:20:09 -0500
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+To: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
+ mario.limonciello@amd.com, bhelgaas@google.com,
+ huang.ying.caritas@gmail.com, stern@rowland.harvard.edu
+Cc: linux-pci@vger.kernel.org, linux-pm@kernel.vger.org,
+ "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20250424043232.1848107-1-superm1@kernel.org>
+ <18b0cabc-6f84-45f2-97db-4f5e2a938aad@intel.com>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <18b0cabc-6f84-45f2-97db-4f5e2a938aad@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+On 4/24/2025 10:07 AM, Wysocki, Rafael J wrote:
+> On 4/24/2025 6:31 AM, Mario Limonciello wrote:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> AMD BIOS team has root caused an issue that NVME storage failed to come
+>> back from suspend to a lack of a call to _REG when NVME device was 
+>> probed.
+>>
+>> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+>> added support for calling _REG when transitioning D-states, but this only
+>> works if the device actually "transitions" D-states.
+>>
+>> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+>> devices") added support for runtime PM on PCI devices, but never actually
+>> 'explicitly' sets the device to D0.
+>>
+>> To make sure that devices are in D0 and that platform methods such as
+>> _REG are called, explicitly set all devices into D0 during 
+>> initialization.
+>>
+>> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI 
+>> devices")
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>> v2:
+>>   * Move runtime PM calls after setting to D0
+>>   * Use pci_pm_power_up_and_verify_state()
+> 
+> You could give me a credit for this suggestion.
+
+Sorry about that, absolutely!  I believe b4 can still pick it up.
+
+Suggested-by: Rafael J. Wysocki <rafael@kernel.org>
+
+> 
+> Anyways
+> 
+> Reviewed-by: Rafael J. Wysocki <rafael@kernel.org>
+> 
+> 
+>> ---
+>>   drivers/pci/pci-driver.c |  6 ------
+>>   drivers/pci/pci.c        | 13 ++++++++++---
+>>   drivers/pci/pci.h        |  1 +
+>>   3 files changed, 11 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+>> index c8bd71a739f72..082918ce03d8a 100644
+>> --- a/drivers/pci/pci-driver.c
+>> +++ b/drivers/pci/pci-driver.c
+>> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev 
+>> *pci_dev)
+>>       pci_enable_wake(pci_dev, PCI_D0, false);
+>>   }
+>> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+>> -{
+>> -    pci_power_up(pci_dev);
+>> -    pci_update_current_state(pci_dev, PCI_D0);
+>> -}
+>> -
+>>   static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>>   {
+>>       pci_pm_power_up_and_verify_state(pci_dev);
+>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+>> index e77d5b53c0cec..8d125998b30b7 100644
+>> --- a/drivers/pci/pci.c
+>> +++ b/drivers/pci/pci.c
+>> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>>   }
+>>   EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+>> +{
+>> +    pci_power_up(pci_dev);
+>> +    pci_update_current_state(pci_dev, PCI_D0);
+>> +}
+>> +
+>>   /**
+>>    * pci_pm_init - Initialize PM functions of given PCI device
+>>    * @dev: PCI device to handle.
+>> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>>       u16 status;
+>>       u16 pmc;
+>> -    pm_runtime_forbid(&dev->dev);
+>> -    pm_runtime_set_active(&dev->dev);
+>> -    pm_runtime_enable(&dev->dev);
+>>       device_enable_async_suspend(&dev->dev);
+>>       dev->wakeup_prepared = false;
+>> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>>       pci_read_config_word(dev, PCI_STATUS, &status);
+>>       if (status & PCI_STATUS_IMM_READY)
+>>           dev->imm_ready = 1;
+>> +    pci_pm_power_up_and_verify_state(dev);
+>> +    pm_runtime_forbid(&dev->dev);
+>> +    pm_runtime_set_active(&dev->dev);
+>> +    pm_runtime_enable(&dev->dev);
+>>   }
+>>   static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+>> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+>> index b81e99cd4b62a..49165b739138b 100644
+>> --- a/drivers/pci/pci.h
+>> +++ b/drivers/pci/pci.h
+>> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>>   void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>>   void pci_config_pm_runtime_get(struct pci_dev *dev);
+>>   void pci_config_pm_runtime_put(struct pci_dev *dev);
+>> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>>   void pci_pm_init(struct pci_dev *dev);
+>>   void pci_ea_init(struct pci_dev *dev);
+>>   void pci_msi_init(struct pci_dev *dev);
+
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9128B1AC88A
+	for <linux-pci@vger.kernel.org>; Sun, 27 Apr 2025 12:54:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745758452; cv=none; b=Q3Z4XzZSjUPARpMhe9LoG+zMiF98iph6ZBaggzXUdD4l/ZSX2W/5dd/IPS5FCHdbf/du9Vc1qdRitSUrPafahhIybXCS2Al5nyHw+SOeD5sbVd65Wn14XxlYBVwsuO1hU56tiwUwUo6G7ZinR3IerfeXH2gYeUPvZB2f4aJBfEw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745758452; c=relaxed/simple;
+	bh=m0ncI8ywbDUYe+YOGHI5QGQIaD+jjjvzA74NbJAljbI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jHb8n0xXUKr45IfZvF54nT0TQciYxsQaIDyJeKZEW28C0Y51j42YmpmfLougHYo/OC9OVi9zoXtavi1nitj+GjrweNba/XDnFtfk0sdniBC3f7K1CjIdmKRss3EVGbKKvhkQm+FtPTCoPM2c4M6sPuSksjvrHKEmTPPsTK9LV0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gdl6s05O; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gdl6s05O"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-43cf034d4abso36090225e9.3
+        for <linux-pci@vger.kernel.org>; Sun, 27 Apr 2025 05:54:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1745758449; x=1746363249; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=nA7928bge5F0w9D37QG7wtoorVGmVQz/sIPfIZUOAl8=;
+        b=Gdl6s05OnjNLBWdEtAimPl48fULBh1OPs/ZvOvqFt0O1U9bCevItqTK2hmdMIoR5fT
+         dForR/YSLO+cNInBbL6SlZLVI/4iD8Fw+raqAjPqJQanbcpsiBORpycmnV6hjtRUSezn
+         CTOT4F6zSPAHi+T9YKim2Wv7U45Ll8Zp1cy98tepzHWRhrHLNlaGkSmIun4UwFWn31Lu
+         xOOLuX0K2u6LRRTEKkwOSRIn0Yfe/hdmeW4ledYCDe/0yPwVlCMoYbYzhcobET6Ps7HL
+         WaJbWVfgvsOA0WMO2+828nFBbREk3inx2pxkmNTmVpvHmL3C9KcDGbg23Z3oPP8gHhUC
+         5PzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745758449; x=1746363249;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nA7928bge5F0w9D37QG7wtoorVGmVQz/sIPfIZUOAl8=;
+        b=OOn0yqQXAh64z4acyozq+qVId5OrBQLo0F0wY5l/hMG1igIX9Q3i6wxJ4mhjVv+erQ
+         BaXpnbfdP/lZLrIEPdhbGHxuUOwsHeFv4X7Es0KkUEjRJcsch5mz8gsi+u+Sr4BZI0r4
+         qlhqgaRQONOWm7s4cVW4V4juCWzvR0T7q0LNGxZZ2Hy8AvWMCt76VrPPBfoViygFipoZ
+         QCAqQBaeNk+DGvZn46oSw4K2qXLiZwWYMtO3aCMM3rsqLk3TeIYZTBFohZSn/t+R0221
+         Or0zP9dTH2HkHKkWv/06QAfYr4uspWCPsjhigMtsAtOkPL4mslfe+xyUDMtPOFlHTCwK
+         nW+A==
+X-Gm-Message-State: AOJu0Yww8Bs6jbymLg1p/UIs//ix/+X7BfTibV6sILQPsdvE1x6ZttOU
+	SAHBbr4cyvctLWaQtZRVMO2jpECwAp6o+i7eFDjLlqBcotMjNytk
+X-Gm-Gg: ASbGncuQ0gMvwJbG8GcKw+q6EB6oPvG6xYrH2A63oqsjJBpW9BuQB232P8Ur5TGGD72
+	R9LPcMvX+JVI+mA2lKWS3TdZR2osou6UglbnVhpjfeJ2fauHE9Hf6ryg+AbcCPLbNMhsnvXpxvL
+	3tum5GUVbTHDEXWBAc/RL1CB8slz9WwSW+tGD5iuHYZhGol+9cUwt8vp/IPtiiYDSBIlVDTHyih
+	8MY3H57Ui0DVcNYBmEM/eePs3+HTS4WYYxXZqqpYZgRt9afLR9iyx23XXVBwKHLYT7urSRN190j
+	C74anqAzTBYZFMPViZWuxEwEbm60j2A3+1WS51IUnSdk9osVoUBk
+X-Google-Smtp-Source: AGHT+IEBSIo0/tf1XX3NJMfYoKKJQPVBsh9PHQ2CDOzDz/xSHr9oMGUEneulT6WpnLK1CqCm2HsISA==
+X-Received: by 2002:a05:600c:4f46:b0:43d:fa59:af97 with SMTP id 5b1f17b1804b1-440aea50effmr25791195e9.32.1745758448768;
+        Sun, 27 Apr 2025 05:54:08 -0700 (PDT)
+Received: from [192.168.1.121] ([176.206.99.211])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4409d2ad112sm123288985e9.24.2025.04.27.05.54.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Apr 2025 05:54:08 -0700 (PDT)
+Message-ID: <ae60787a-7e98-4180-838a-34df402c8f86@gmail.com>
+Date: Sun, 27 Apr 2025 14:54:07 +0200
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+To: Mario Limonciello <superm1@kernel.org>, mario.limonciello@amd.com,
+ bhelgaas@google.com, rafael.j.wysocki@intel.com,
+ huang.ying.caritas@gmail.com, stern@rowland.harvard.edu
+Cc: linux-pci@vger.kernel.org
+References: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Language: en-US, it-IT, en-US-large
+From: Denis Benato <benato.denis96@gmail.com>
+In-Reply-To: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+> From: Mario Limonciello <mario.limonciello@amd.com>
+>
+> AMD BIOS team has root caused an issue that NVME storage failed to come
+> back from suspend to a lack of a call to _REG when NVME device was probed.
+>
+> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+> added support for calling _REG when transitioning D-states, but this only
+> works if the device actually "transitions" D-states.
+>
+> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+> devices") added support for runtime PM on PCI devices, but never actually
+> 'explicitly' sets the device to D0.
+>
+> To make sure that devices are in D0 and that platform methods such as
+> _REG are called, explicitly set all devices into D0 during initialization.
+>
+> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI devices")
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> v2:
+>  * Move runtime PM calls after setting to D0
+>  * Use pci_pm_power_up_and_verify_state()
+> ---
+>  drivers/pci/pci-driver.c |  6 ------
+>  drivers/pci/pci.c        | 13 ++++++++++---
+>  drivers/pci/pci.h        |  1 +
+>  3 files changed, 11 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index c8bd71a739f72..082918ce03d8a 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
+>  	pci_enable_wake(pci_dev, PCI_D0, false);
+>  }
+>  
+> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> -{
+> -	pci_power_up(pci_dev);
+> -	pci_update_current_state(pci_dev, PCI_D0);
+> -}
+> -
+>  static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>  {
+>  	pci_pm_power_up_and_verify_state(pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index e77d5b53c0cec..8d125998b30b7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>  
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> +{
+> +	pci_power_up(pci_dev);
+> +	pci_update_current_state(pci_dev, PCI_D0);
+> +}
+> +
+>  /**
+>   * pci_pm_init - Initialize PM functions of given PCI device
+>   * @dev: PCI device to handle.
+> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>  	u16 status;
+>  	u16 pmc;
+>  
+> -	pm_runtime_forbid(&dev->dev);
+> -	pm_runtime_set_active(&dev->dev);
+> -	pm_runtime_enable(&dev->dev);
+>  	device_enable_async_suspend(&dev->dev);
+>  	dev->wakeup_prepared = false;
+>  
+> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>  	pci_read_config_word(dev, PCI_STATUS, &status);
+>  	if (status & PCI_STATUS_IMM_READY)
+>  		dev->imm_ready = 1;
+> +	pci_pm_power_up_and_verify_state(dev);
+> +	pm_runtime_forbid(&dev->dev);
+> +	pm_runtime_set_active(&dev->dev);
+> +	pm_runtime_enable(&dev->dev);
+>  }
+>  
+>  static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index b81e99cd4b62a..49165b739138b 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>  void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>  void pci_config_pm_runtime_get(struct pci_dev *dev);
+>  void pci_config_pm_runtime_put(struct pci_dev *dev);
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>  void pci_pm_init(struct pci_dev *dev);
+>  void pci_ea_init(struct pci_dev *dev);
+>  void pci_msi_init(struct pci_dev *dev);
+Applying this patch makes my laptop power-off quickly and no hardware-related services gets stuck anymore during shutdown.
+
+Tested-by: Denis Benato <benato.denis96@gmail.com>
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from mx0b-00154904.pphosted.com (mx0b-00154904.pphosted.com [148.163.137.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A10F1EA7DB
+	for <linux-pci@vger.kernel.org>; Thu,  1 May 2025 14:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.137.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746108893; cv=fail; b=UmK0AzwohZ1AAUsS3yLZwa2eyqkl3uUvE6ym83L9Eu/UuK/kpgxqzRP8OkFTsj3Q5YX8DFx64BxiAV7dISNRWW34oh4YJ8awU88Z6bgOCa1xkloOTiBBuwOphf7EDTuUBXeftjCsLWuEVMn83t66Py9sXmnnZorUiiDWIvcwBVA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746108893; c=relaxed/simple;
+	bh=HuUrOGwxh32z1iRTwf9o00eiN44q9QzjSNeknuJwHSU=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ele70ypgy8AWoWFhk/wBRcR7rrBGkMKMno1aAYqtoxS42Gqv+TYJJ8S2QNgS5bGllktuSQJJiyEFq51U0zYS8XgR3Ya6uss++ZzsxhhB/dTez0Js7NIldSysqyKoFenQKDAWSlGQ9xmWAWDPQoD5CSLj4St/icLDic/v+WHLPSc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dell.com; spf=pass smtp.mailfrom=dell.com; dkim=pass (2048-bit key) header.d=dell.com header.i=@dell.com header.b=dYTbOnbq; arc=fail smtp.client-ip=148.163.137.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dell.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dell.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=dell.com header.i=@dell.com header.b="dYTbOnbq"
+Received: from pps.filterd (m0170397.ppops.net [127.0.0.1])
+	by mx0b-00154904.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5418s9oI004149;
+	Thu, 1 May 2025 10:14:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=smtpout1; bh=C
+	MZbtQyQA9r26Utse+Zbt68lsvFr88OqGnp2mzQ6AKE=; b=dYTbOnbqYKmrwTqfG
+	auFQy5a3ySQ0Yx7tN0dfXNwORgZD7h7S9SSQJCwlkvLfFiJ6ksjVLh2+Omx40EZY
+	4c0l5XCY4378KPRkKKgYk7dAwWiLhvB6dkdRxYoaKzpZl3veVHK9XTKWEz2DWvDa
+	US3La/Dug/OUqBblt7LxpM8aZFPBA2x+JOxnMq6DG/TWI+QBOKmlgMGqsYquwlwS
+	aZwCegVUvFTPUqlMKedrYw4yqLCraycXtm9fGOTg4Q9gGR7YA/Coo4okroNqghPF
+	cC8CCUqw2GM+PqeWA01ZygoWg4/OMRolzEYE7Hpsz1GIic8n7pti1ZR9bltpJkdb
+	ykgjQ==
+Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
+	by mx0b-00154904.pphosted.com (PPS) with ESMTPS id 46b6ts0s0d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 May 2025 10:14:29 -0400 (EDT)
+Received: from pps.filterd (m0142699.ppops.net [127.0.0.1])
+	by mx0a-00154901.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 541Dlpmu000648;
+	Thu, 1 May 2025 10:14:28 -0400
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2173.outbound.protection.outlook.com [104.47.59.173])
+	by mx0a-00154901.pphosted.com (PPS) with ESMTPS id 46c55v3ac9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 01 May 2025 10:14:27 -0400 (EDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=V7LGbCRJW/FpLxgg7pDRqUx6QfEz49aFtFCSADY+2PNNIvr2xFoYfpLMazWOgPHh0Zze8guxOpnHHFUSiPSXYbe01+hbpz3BfIaX9A8AQ15TxehsBi2MvHGTI3rjgYvmrVQE3o7jc6qbpjSNL1GqgTOERwrxsZ+lKz3Nh7JX0kZH/fepB0XzC5EZeV1r8Z/yI8eMOdVVdU0ztIq/QUbXYPIiDFCF8R7I6lVj2TAf88NUoeNoEEmK0t5uHL4cBP4HSUE0MwHBOGCs659Ht0YZodjrB62kxeSvFCrvVgdA4mOoIQZs4G0FysKCYOnrW76tj+HtfxFQJE+oL3hk76jvAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CMZbtQyQA9r26Utse+Zbt68lsvFr88OqGnp2mzQ6AKE=;
+ b=Aa166gYEJdui6c7t+ZFWEl1bXYfXJQXzj1GouzRWoJPsMj7F+nsdjlO7AqGy0R4BiBvF+UVD8Px+Okfv+GAwfBUtnY04OaH2sdqkfNlYk+s1nt4xSlNYzJ4/ffL/DCr1+UmBnFBwpPaTK0xO0L0rF1cwL2WuGTzrlUq4zysTe3XvuS7cMM+vTER4kjbE4W0CpuStRyuAQISoopEDh0qXcscBvZ78lSyYJBoENAEOGbjEWvqUj15cKwJmdmjlW6jYyzUY8/7LUAgJHOw7LrNT0v94OHbYfXx9d7PaSjQEulFzbCz2ubcdSJAabMcN6etSV7ttJgrlCeDHN6hIXK0ttA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dell.com; dmarc=pass action=none header.from=dell.com;
+ dkim=pass header.d=dell.com; arc=none
+Received: from BY5PR19MB3922.namprd19.prod.outlook.com (2603:10b6:a03:228::23)
+ by PH3PPFAC235501A.namprd19.prod.outlook.com (2603:10b6:518:1::c44) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.19; Thu, 1 May
+ 2025 14:14:21 +0000
+Received: from BY5PR19MB3922.namprd19.prod.outlook.com
+ ([fe80::afc3:5bb2:37fb:2f9d]) by BY5PR19MB3922.namprd19.prod.outlook.com
+ ([fe80::afc3:5bb2:37fb:2f9d%7]) with mapi id 15.20.8699.022; Thu, 1 May 2025
+ 14:14:21 +0000
+From: "Shen, Yijun" <Yijun.Shen@dell.com>
+To: Mario Limonciello <superm1@kernel.org>,
+        Mario Limonciello
+	<mario.limonciello@amd.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "rafael.j.wysocki@intel.com" <rafael.j.wysocki@intel.com>,
+        "huang.ying.caritas@gmail.com" <huang.ying.caritas@gmail.com>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>
+CC: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+Thread-Topic: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+Thread-Index: AQHbuqNVz1R58+uJDUuaujVHB35ivw==
+Date: Thu, 1 May 2025 14:14:21 +0000
+Message-ID:
+ <BY5PR19MB3922318563A0CFD56A04BF9D9A822@BY5PR19MB3922.namprd19.prod.outlook.com>
+References:
+ <BY5PR19MB3922D2994064085132D8FEBD9A822@BY5PR19MB3922.namprd19.prod.outlook.com>
+In-Reply-To:
+ <BY5PR19MB3922D2994064085132D8FEBD9A822@BY5PR19MB3922.namprd19.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_ActionId=2db68047-4387-4be8-ae64-8d49fc237fd7;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_ContentBits=0;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_Enabled=true;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_Method=Standard;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_Name=No
+ Protection (Label Only) - Internal
+ Use;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_SetDate=2025-05-01T13:48:49Z;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;MSIP_Label_73dd1fcc-24d7-4f55-9dc2-c1518f171327_Tag=10,
+ 3, 0, 1;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY5PR19MB3922:EE_|PH3PPFAC235501A:EE_
+x-ms-office365-filtering-correlation-id: 494582d3-13b7-4a52-8ad4-08dd88ba7820
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700018;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?RDqBcOs+rPrmRJ3qKrTD/CxYh78ZTTyGnXWhkDu03mDYGuEBOO2hxYj8r9VK?=
+ =?us-ascii?Q?pLtx1IKp2ADEO29i06TQeAy+oWaDHc0J3euVWvnczjluM5+Xqx46yrvEL6GZ?=
+ =?us-ascii?Q?l/6Ej96tfpBKkZEllC3XFnwpY6+G+WkH7T8tzDmPkRxvVdmpAgwcGOAAt7nn?=
+ =?us-ascii?Q?DiMKktYcv612ZjOdagBpZnt5wORiJiO0+L8ldILbcJ6SI0aBQDVLQfTy0Vx/?=
+ =?us-ascii?Q?fhDgFblfhzWOjoiUKSA5xKCmhzI5T5qRjGdPAK09FK7kIL560V3Ki1LCkAYd?=
+ =?us-ascii?Q?JIFy7LuyKess9loEgzEWoObBuOfCxlAKDsTazlJQ71so6GUMedmg1YTPcchE?=
+ =?us-ascii?Q?t7AwycoafS0Msl96BZyYS+w7wye6jBJpsOba0HP4wwBu0vzJ/9udoj4l8/IG?=
+ =?us-ascii?Q?DVkclapwHhkSjBNUJOqwb1NYyP0Xx/S+KZMayG40zAAQpcC13AqjyC+V9Pvb?=
+ =?us-ascii?Q?xlgv4242jcjJ8gOaE8QlvsxX7cq2/InjOGsisYjYNV7vIiLmeCuodrTqpW5N?=
+ =?us-ascii?Q?gvg5nsZG0jtAK+9ykJGSu7dU0TXSTB5OzbERCfLmz8gxe4ypjgn8tvc5jExD?=
+ =?us-ascii?Q?8Bd+g7SfFU1Bj+1H5Og6jgxvFludxdwHpK3s99VEvf8mEI35RCT9R4fMJGXZ?=
+ =?us-ascii?Q?QtzYToed1J2WzZA4O41zgwDcTif/P3ILhebG64dykSFyLDpQLJfBmaepTl6S?=
+ =?us-ascii?Q?IEzwl9479dDO1pyICKPejYd+Wri0ZnR1vQ6rb+HhJ/dbGGMCTmsqU+36A+EI?=
+ =?us-ascii?Q?811bTBA3YefLMP0zMcPppxTAJnHnFPbS0ReTsVPgYBSU1QbI+Hyh074amgEh?=
+ =?us-ascii?Q?+UpnrJAYt6Ft3ekoxfNwCpEowGHoadmi2tnT9vlC1Edr9xPSnlqsZ0BGeGss?=
+ =?us-ascii?Q?LKa9SN2ThinS6e1pfKRBm+XJNeGLB6nCIY7I8KoYirIYKuKxOXf8em7KSGeF?=
+ =?us-ascii?Q?BAIGkcU57LzIw06MmkPSrqm50HyaSHXIPwq7Xc345qrIE1YOSTTM58vvCrL2?=
+ =?us-ascii?Q?ttsDKJ9+iTH5/89tAyfBnemwaL9ojCvOi9n2hosNtVjWIsYUdAn+/tF2K4j5?=
+ =?us-ascii?Q?cddj6f9TiwfkDHbkXoUop1uz91RYzMyuCKS09KArc9M22CshuR0boqsLhAfR?=
+ =?us-ascii?Q?pt/XeVFcaAqRa+UcuiiILgHk98Ddc1ZedouyAeqEn/gd++DfxUMCtxiV/JQJ?=
+ =?us-ascii?Q?AICQ9pmPBqAoteVfF4boMWJeHix+hZ6w2V82gEmZFW4XsC/+fw7c6LLBgovJ?=
+ =?us-ascii?Q?GGXCv86V168wVTjeHPJt7txuRKRgpVkl3MnuQNT8yyGVZJuJjGYAxC4VV+wM?=
+ =?us-ascii?Q?YkK/mMi1GM44/p2meA1sNxz0sTrguSTbagKcuQE+FnGSDZRISWtdCoNSEgud?=
+ =?us-ascii?Q?7siUvlMGSPuzVxkIfGP42YzEbrhl3pRP+779uG+JZiYiMTuzgjpzSLigWyYp?=
+ =?us-ascii?Q?HXDTGHStPUdBrwspWXdYpIis63YJ5m364nYOBnG3+mYQP+fVsfHF2Q=3D=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR19MB3922.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?m/dZpKP4KgXvf4lwYxg0WGGeRTEvywzLMj1D6J2b6QgTV2ToG69BD6ps53iD?=
+ =?us-ascii?Q?qjRYXv0gfN3Z8hWPIw9m5Z2Hl6WKv060EbC/OZ3HQpYMrvwHBVVNYR9D8OrS?=
+ =?us-ascii?Q?LDGLEFLNtEkBbfmG3xylkPvewqc4vFL9pMrPhHh4AWFWkTG+EF9A2qpJQJ/v?=
+ =?us-ascii?Q?+T17ShlASpolXzYvJ9pCKxWlMZGSyFRVHf4B2Id6veZ6suvVp4h+zsrk2Mzc?=
+ =?us-ascii?Q?rF2kt8/TQkv4taLD+hon06wTIv/YnxwmG6e/OHyn/TwuboyEsNfsita+Y93A?=
+ =?us-ascii?Q?Kd5JQMEULShRSF9e/t5vObuhRUD15SX6iFwlhq+yX1h7US7nM2/RDyhzoJwO?=
+ =?us-ascii?Q?4rbxH8EJg8Fnyujq87UsKHPKiPQ7A2S9UIHHkv4EIbOJH/hfyZ8VhqL2YINp?=
+ =?us-ascii?Q?u/ocRUxrNGaeNjN0GWCoSQ/jJAh3ga2NEAsD/nSJQr/BTfV5DeXD+rAGPt/j?=
+ =?us-ascii?Q?Ipn0g8Zkzq1kfr06VdVTcOczqbPACogJzS7JvWAsSNaZ8AK5cnENHG2vEQBr?=
+ =?us-ascii?Q?JK9kpN4OOP+fHdHikln+VyE4mbcbvTtoyGQNv5TgS8dIDmdHteKVLW0j8+Ki?=
+ =?us-ascii?Q?ti23iY8Kdp/e0EaF9Eiowj6ZZ/CTEV4OLcmHhdKfBLtCj+iFijaJC7h8jWOv?=
+ =?us-ascii?Q?Yj1NOqVD4xgDgYcij7Qm4iLgPFozgJI8ayO9PEdk9Rt3ui5Oz/b0xsng9wv3?=
+ =?us-ascii?Q?FIACkF3oE1rUPTgxcXHMeeqhFbt2cgxTjgngRGFMqyNiT1Qd0s+exNKYK/rz?=
+ =?us-ascii?Q?aEiBGUmvp6ilPAxeprNzt2JmU0lUu4/gJQX8GQOQodW4GOMnIUZjlPeGV1Sd?=
+ =?us-ascii?Q?H7hQcNR9sLT+NggP/4MNjOE103ESk4CorQXsBA2I68D7Eu+Jpa0uyiQR+wAp?=
+ =?us-ascii?Q?eeb3HTXDlxKDHsI1/wF5U/d4HjvbSCMXFBw0bgEX8XaWG8LJu1l94P5IFkOc?=
+ =?us-ascii?Q?CT8Xg8nodz/gJbbeM5C+nAny/Bp9N6iAtgWJcpmEPY5raAKWt6z4SPSmw3zm?=
+ =?us-ascii?Q?rEgc4lNrzZxqPKDF3mbFz4htTROgDH8ahV8q1Ycc1R1duZzyv1rILT7vOcZV?=
+ =?us-ascii?Q?9v6/RsOuM/Iu4FJ9P62umW7xWIzhRiAOazx5AbOlLd4FtaafsHHeUaBgtMB4?=
+ =?us-ascii?Q?HQptmbgqJE3LHA+bBcmkrR7Ay1ij1t9Gog+IEQmt3Hy34rzsAXYWsqYAjNP8?=
+ =?us-ascii?Q?2B5RTVvtkTVBuiuwCoOoa2X72qvpyy1O1VBPtIBMtZ3s3LrMG1QoMW54JPDp?=
+ =?us-ascii?Q?K8NkJhAWuEQN5ubDfUPB0hWKO9Q32egRsmiNQOudvGHvv7hIXlQTfEngLvct?=
+ =?us-ascii?Q?1e110ossHp7Zstk9dgGCumNmwq8rFHesona102dUqbnCCZLujt2+uTrMuZQZ?=
+ =?us-ascii?Q?ZRfUa1Fksfu9bHm++HPTsEUGILcJDI5SC4+TaUcyBlUliCnzPR8n4pGAonlT?=
+ =?us-ascii?Q?ewRTTtMrwA0bC71pGSBqT3H5WL1B0PwekYnlqRJwUKt6XmjcRTdl6LaJfSPN?=
+ =?us-ascii?Q?kN2RVLDAxtafgBS2trcWhinr/j+4gHDZf46w1SgmxRiQxUO7g/C5ktXv45ro?=
+ =?us-ascii?Q?Y/kQLtP7GL8bGmUIEmDikd9SJ0zgQNeGPYljquW1?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-OriginatorOrg: Dell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR19MB3922.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 494582d3-13b7-4a52-8ad4-08dd88ba7820
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2025 14:14:21.6780
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 945c199a-83a2-4e80-9f8c-5a91be5752dd
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YymUvY3Hn0FWo11WW635mcaR8240C8TIKLz1el32ptUD9ce5ceOYkmLrye1jCxjTDeaSyax6j+wInShTT62z+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH3PPFAC235501A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-01_05,2025-04-24_02,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
+ phishscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=999
+ priorityscore=1501 suspectscore=0 spamscore=0 malwarescore=0 clxscore=1011
+ mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505010107
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTAxMDEwNyBTYWx0ZWRfX8+LIYq3gXyif GckbF/MIhAhURfoSooJlrTLorCO2LBSQ8UgaPrRM4MqTAhjMV/G/QXc63T8CR7NA8HK0r5AWfw1 eKUgOVJEKAYBFCdWrAaaspHvaGi9jX8+vIg6FIiJ8zg/X08nmcMqxs5BPKpDEc7S7CHsLdadzDS
+ rm8Ja/bDL3mnRN2XNt23kTeiLnK1X0NlyAOfI0wyqgj5TFSxcMEd262+BRL3MnKuZGfT83fbfFK KbH8viiR+2it+zmQedzvCnImT5kqSTdxtanMyifXaRFAfaJubIV42R0jJB+O5MLZk2M6OLiozlh SssnfFM7y7rMtlZWhzAX2IGe18GgrqZM+AvgsUMDBaI1jd+bkOT+DWc91gU25vC7fEPMohI7Lbt
+ 55sdxqBmgCF8d1DXOYqlDypB4Ng5vmZiW9Jeuofb6pCJez8Ug/wDmew1Zasya4Dwc61mbwKr
+X-Proofpoint-GUID: NVaLekmJKJGqbaOR0g15D964jYnSQc4t
+X-Authority-Analysis: v=2.4 cv=PLUP+eqC c=1 sm=1 tr=0 ts=681381c5 cx=c_pps a=j0++y401J6f/BxNAf5EDow==:117 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19 a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=dt9VzEwgFbYA:10 a=zd2uoN0lAAAA:8 a=iLNU1ar6AAAA:8 a=IICk_OI6UXWMu6ek2N0A:9 a=CjuIK1q_8ugA:10 a=gbU3OgOOxF9bX48Letew:22
+X-Proofpoint-ORIG-GUID: NVaLekmJKJGqbaOR0g15D964jYnSQc4t
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 lowpriorityscore=0
+ spamscore=0 bulkscore=0 malwarescore=0 priorityscore=1501 clxscore=1011
+ adultscore=0 impostorscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505010107
+
+> From: Mario Limonciello mailto:mario.limonciello@amd.com
+>
+> AMD BIOS team has root caused an issue that NVME storage failed to come
+> back from suspend to a lack of a call to _REG when NVME device was
+> probed.
+>
+> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+> added support for calling _REG when transitioning D-states, but this only
+> works if the device actually "transitions" D-states.
+>
+> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound
+> PCI
+> devices") added support for runtime PM on PCI devices, but never actually
+> 'explicitly' sets the device to D0.
+>
+> To make sure that devices are in D0 and that platform methods such as
+> _REG are called, explicitly set all devices into D0 during initialization=
+.
+>
+> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+> devices")
+> Signed-off-by: Mario Limonciello mailto:mario.limonciello@amd.com
+
+Dell hits the same issue.
+
+Verified the patch on the issued system, the issue is gone.
+
+Tested-By: Yijun Shen <Yijun_Shen@Dell.com>
+
+> ---
+> v2:
+>  * Move runtime PM calls after setting to D0
+>  * Use pci_pm_power_up_and_verify_state()
+> ---
+>  drivers/pci/pci-driver.c |  6 ------
+>  drivers/pci/pci.c        | 13 ++++++++++---
+>  drivers/pci/pci.h        |  1 +
+>  3 files changed, 11 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c index
+> c8bd71a739f72..082918ce03d8a 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev
+> *pci_dev)
+>         pci_enable_wake(pci_dev, PCI_D0, false);  }
+>
+> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev) -{
+> -       pci_power_up(pci_dev);
+> -       pci_update_current_state(pci_dev, PCI_D0);
+> -}
+> -
+>  static void pci_pm_default_resume_early(struct pci_dev *pci_dev)  {
+>         pci_pm_power_up_and_verify_state(pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c index
+> e77d5b53c0cec..8d125998b30b7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)  }
+> EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev) {
+> +       pci_power_up(pci_dev);
+> +       pci_update_current_state(pci_dev, PCI_D0); }
+> +
+>  /**
+>   * pci_pm_init - Initialize PM functions of given PCI device
+>   * @dev: PCI device to handle.
+> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>         u16 status;
+>         u16 pmc;
+>
+> -       pm_runtime_forbid(&dev->dev);
+> -       pm_runtime_set_active(&dev->dev);
+> -       pm_runtime_enable(&dev->dev);
+>         device_enable_async_suspend(&dev->dev);
+>         dev->wakeup_prepared =3D false;
+>
+> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>         pci_read_config_word(dev, PCI_STATUS, &status);
+>         if (status & PCI_STATUS_IMM_READY)
+>                 dev->imm_ready =3D 1;
+> +       pci_pm_power_up_and_verify_state(dev);
+> +       pm_runtime_forbid(&dev->dev);
+> +       pm_runtime_set_active(&dev->dev);
+> +       pm_runtime_enable(&dev->dev);
+>  }
+>
+>  static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop) diff --g=
+it
+> a/drivers/pci/pci.h b/drivers/pci/pci.h index
+> b81e99cd4b62a..49165b739138b 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);  void
+> pci_dev_complete_resume(struct pci_dev *pci_dev);  void
+> pci_config_pm_runtime_get(struct pci_dev *dev);  void
+> pci_config_pm_runtime_put(struct pci_dev *dev);
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>  void pci_pm_init(struct pci_dev *dev);
+>  void pci_ea_init(struct pci_dev *dev);
+>  void pci_msi_init(struct pci_dev *dev);
+> --
+> 2.43.0
+
+Internal Use - Confidential
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F3D51AA1C4
+	for <linux-pci@vger.kernel.org>; Mon,  5 May 2025 19:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746472854; cv=fail; b=GZLsVVhS15wvK1rWROs+dMmFy8msq1nLYYCYqIENGXFUJBCdB26unpmdo/YAuDmuGwP0s6BxUlwAD0H5mLQOVTnp7MJHOv+SKhvFxOFDalI9uvYQupDouhrhCb+Zsdp15uieHM06KLRyELeLuinyOUhBL18SOyCt1o6r7WG++fY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746472854; c=relaxed/simple;
+	bh=mKPjbtcADNB2/APi5WYy8Lprh067PwTV7baK15BuUkM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=pX29B5/BVgEMW07laQq+RjCdhKTd+FNaXzN9hb2fqR2DbmnkMeBmUWoL5+bcZ1a1JOASkC1y6toICeigkJdE9M22XeeUxRZ4Gjhww6u1YaSZn9rl3n7m79W60g53Zjt2HYu9slEh5iD7oJqrNJZC/iY4obgxbGT8LHbu/Qf9BMQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=nNgISAsr; arc=fail smtp.client-ip=40.107.93.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="nNgISAsr"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Pxc7/GjW5MuaM0myKnjVHMs6yc0wBRqPXnYm3ywpGNIx8d3C88ZaMiJoRdTyZYQUuInxQpHrAJy/wuSb2hdZU70A9uXGZ7p4kRAK8WKbXO+h45eeNidAVrkujFuU4zqi8XwlgYG5XU+fdpaTyHf8npCyGjvvyfUAm3N0aEHLG8BVq5PEmzgVR7vPtr1FRz8vdemU6vqaHOfFkeTwPR3WqXrRbdo5l9DEdDD1z/8mQaesB0en0rln9MAIaXE4PsX5DZ9zpWmGRAJaeAFedORBHugMpPQBoRgskO5R69QP/Psg3XDlxxM5X6J3G54Ph2UIk5XHnUKxQ31975bFbKfLmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TfvVDpfPuVgP6FIcxYtD0cpR3J37LyE+2ykE+LGuXG4=;
+ b=AwKabk3o8YCIp19/m9G+U79yllcAUDGgHLRek5ffM+N/EvYE32YlUGq1M+/i/2Ff0raawWejNbcSDRQLi/aRclpp5Dkx+Sn5t5u2CjiAgrjPB3ihReSfx61JBshCaINoNoRNb9FSePNbv1kv0kOkgZOjcUzOgiD4WUWJZkvYjzDoUiRQyb9DJTFw0jETTFQnwn8IieKEh4ZPshCnj+t2xWWTV0jIw7Gzo7jUgLoj/79pxBB0sxz/LYWoXtgwxcqCBvrHVEqURF0uOtAPNuAmWBPDktOhm75Ok6FNb2GTja/tovi1YKkB1TFC5lV4JxdNSNLEVXwLkK/BjawJelSYyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TfvVDpfPuVgP6FIcxYtD0cpR3J37LyE+2ykE+LGuXG4=;
+ b=nNgISAsr423B2XF1vhJAhpwIVKcwnq+osTqhiAfcCpzKCR1010h8n1bmP412q04ZoG3Ig5fwghA3LPbk/2qMQqz2QA10uvAdZPsU8bwYYbov8TLN5EldD+ijkL45SYjVfRYOJFe41tFXJN2bcP/8BKGtOI7sXPWLQPH50B+s79A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB6409.namprd12.prod.outlook.com (2603:10b6:208:38b::7)
+ by BN7PPFD91879A44.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6e5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.33; Mon, 5 May
+ 2025 19:20:50 +0000
+Received: from IA1PR12MB6409.namprd12.prod.outlook.com
+ ([fe80::96d9:e0c7:bf0e:14c1]) by IA1PR12MB6409.namprd12.prod.outlook.com
+ ([fe80::96d9:e0c7:bf0e:14c1%4]) with mapi id 15.20.8699.019; Mon, 5 May 2025
+ 19:20:50 +0000
+Message-ID: <1944cb5c-2352-456d-bf4a-5b39d7ae0fe5@amd.com>
+Date: Mon, 5 May 2025 14:20:48 -0500
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+To: Mario Limonciello <superm1@kernel.org>, mario.limonciello@amd.com,
+ bhelgaas@google.com, rafael.j.wysocki@intel.com,
+ huang.ying.caritas@gmail.com, stern@rowland.harvard.edu
+Cc: linux-pci@vger.kernel.org
+References: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Language: en-US
+From: "Perry, David" <david.perry@amd.com>
+In-Reply-To: <20250424043232.1848107-1-superm1@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA9PR13CA0068.namprd13.prod.outlook.com
+ (2603:10b6:806:23::13) To IA1PR12MB6409.namprd12.prod.outlook.com
+ (2603:10b6:208:38b::7)
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB6409:EE_|BN7PPFD91879A44:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c825f99-9e4a-4c41-1a4d-08dd8c09f241
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?TmFQNEtqWGV2R2ZYZDJoNTYwWkVsZmxtcFhGeVE4VjlLVDl5MlY4elJvN0tu?=
+ =?utf-8?B?dDllcVdwL2tIOWhYcGhYSDRIenJVWWQyRkxxcHg4RU5VWkJxR2ZsNHdlTlYw?=
+ =?utf-8?B?UFNmMWRFeFRXK3BFSzlld1BxRkV3VS9xajM4cWVnREFDZXMrYWhZS3NscWxq?=
+ =?utf-8?B?eEtUMHYweHNHWGtJcHF1Y3BNbDJRU0Y4SHA2YnNTcWY4OWVRcDZ0eTVNZXNV?=
+ =?utf-8?B?RnExRE1PY0pkbEIzL1dIY3Z5Ni9SNDRQWk5MZEQ5TW9Sc2pGa3cxZVVYMGZ2?=
+ =?utf-8?B?ODhHSVhDMW9QNXdpOFdMMytsUlRmd01IU1Q5STY4aEFIMnF5R3ZqL1JwbFRt?=
+ =?utf-8?B?ZmIwUS9oMEpyNDlZaEFyb2wzNTdXRU9URGFqUkEvKzkraGllaktnemZEeUFS?=
+ =?utf-8?B?TDBLV3EzWU15YWxjLzYrNDVWLzZ6c09ubTBla0hhQVVmUG1mRDBXMm53bDQy?=
+ =?utf-8?B?UFQ0d1ZsYU1lSTNJeC9mcFZhU0pNRDk5aXpmZFN4dDBoa3Nxd08vK1ArcWxE?=
+ =?utf-8?B?cjJwV3RwcG9KL1VRQTlzOXczYXR0aXJkYXZqN1k2Q0l2dkI2TlBLS056M0Y2?=
+ =?utf-8?B?eDJ6RmdOSlJnZmlkdUZ0K1lqTmxXdkg5Z0l2T0lseForNEQxL3RmWWpzbS9o?=
+ =?utf-8?B?MWJaSEhIZUtRQitjL3l1YnBwMFV3NUcvVGZ2R2ZoS2dIYmNQNThLMkgyZDVQ?=
+ =?utf-8?B?TEpnRzNNRm9JSTMzV2NMaEtHcVB1NFlvZndJcXUrMURlZ09mTWsxdUdTOVNE?=
+ =?utf-8?B?TkVCVDhkanJmRWl2SmVKNkN1a09ZRk5tQjRGUnE0TmxNbHJWVG56cjhaTVRI?=
+ =?utf-8?B?MDNYVmlpd0RCb1RjbnpSeTVDQ1VOdDBTd2VUWDM0US9vMVRnbDJmbnZYOFRx?=
+ =?utf-8?B?aGxmaGt0RDczV3lPWmh4UXh4MFdxMGtDdjdNRnFOd21mVWxUeWdGMWZPOXJE?=
+ =?utf-8?B?Z0IrUWpmZjNyZ0xzd1VjeUhkdEp2azRLKy9Rd3Z2ekJYVzkwbGpULzZuRkxN?=
+ =?utf-8?B?OUFsRC80c0JCbXRGR0J4YUx0L0owaXdvSmpJN0xSbTdmMVl4YWMwUWFKdzdq?=
+ =?utf-8?B?bEhWNmZlSzhMZDdHQ0p0M05pdVRHdmtQaWxoRno1Y1BsK1AyNEdWN1FQT0h5?=
+ =?utf-8?B?Wldxbi85dXVyYU80LzZhRXZkZXo1RVBOcysxdTlFUjNJSFZiL1l1cEIrOUVn?=
+ =?utf-8?B?SGZSSFpLMnJYYTF5VXpSUFZwakZLbkZRUHg0VUkvT2RaRVlpOHdRdUkyeGI5?=
+ =?utf-8?B?bnVkbVBCUXdySHNVN0k3VDlsMnBjc2xtaFRqVTdGVWo5b2RMb1V2UmpMcXpI?=
+ =?utf-8?B?Tk93Q2hkWGN5dmdKbGhXdVlMZ00zVzBDQ2dHWkJPL2YxT0YvTmh3ZE5JTE5M?=
+ =?utf-8?B?UHJjMXJjQVVQK3dYWG1yOStQMXo4UkZCazA2elNlalNSYTFKb05XNVV2OEZH?=
+ =?utf-8?B?ZzJKNkdPZXJodWtCc1BGRFpSb21SaU15YzdtVDlBa0pJK2gxR0JVQnlGVndE?=
+ =?utf-8?B?TGJkM2g4WkJ5bWEzYjJtVDZ3SGM1eDArUk9kSkEyUmE5ZE1iVGpTZU9yRVQ5?=
+ =?utf-8?B?Sm1FWjYwZlVQUGRoTjNMbVR6TjJhejhSNDFic0VCOVVocnZ4d0c0Und6MGtO?=
+ =?utf-8?B?MFdHNzJsQndXeVIraDB1dmZQay9WdGRmWlhmZy9WVzN0WENILzUreUVEWjY3?=
+ =?utf-8?B?YmJ2T29qTlRFL2pmdGpsYVBjZEJIZmN4VytxdzlhVUtxbXl0dktMZkpmaytm?=
+ =?utf-8?B?MVA4cnI1ZFBsOFAxSWdIRjJnSU12bGIrQzIwY2Q4UDZSWU9STHVSV2tZMHI4?=
+ =?utf-8?B?aklRWitYOXZiWVFVNnovZ2N3K0xRZHlOKzRrbDdsTFZvVGtlTkpMNGNLUE1D?=
+ =?utf-8?B?UUJmb0YxMnpscDRCZ216dndvaUJpSmJZcEhHM0tOZTdra0VPdWUxVUVycW5y?=
+ =?utf-8?Q?5XycsR4Aiz4=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6409.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?akxyUU1CWCtQWmlLdXZOY3JBN2N1QXpQcHhVSWVFTDBLdlFHT2hPY3JjQzV5?=
+ =?utf-8?B?RkZSZGtRZm1iQzFhRE1GT1NrYzc0cVlrU3JEL28reHdvVWd1ajRlK0tqMUd1?=
+ =?utf-8?B?WDF6eXBMTm5Cd3BKaEkweTBMeStubXg2YzhHUFdETiszb3JOejRKL3BqeVhl?=
+ =?utf-8?B?OEFOQW9qbkxQcklpUERwOEdRY1JTMzBTVnYxY0FBbkpSTWRsb0NHUlVKUGRv?=
+ =?utf-8?B?QUxhOEoza1pjYWJRNVZkeTBpTFNUT0tEM0l4NmNxWW9oSmJBVVBqNEEzMEYz?=
+ =?utf-8?B?NkxPeG9FeGxld1gySTl6eHhVT2RZSG1DT0tHYTFrTnlLVkpNR25xV1g2UnY3?=
+ =?utf-8?B?M0c0bHRtSFlZa2duNXFtNW1leEdwOEtsczlXSm5mNFhnNmxSNGN4MzI0ek9y?=
+ =?utf-8?B?ZGRma3FxcmsvTnBucVlnU1NKV3VTUWk1eGZ3ZXkySnlLRndyUW9GTm5qLzlU?=
+ =?utf-8?B?N2o0WmZ0RXRRNXdKVzdyd0tYeVhqZm9HeElrWm9SbkNaaHlWY3N6SkhudDBL?=
+ =?utf-8?B?YnoxMU9rbUtRNTZCeW9RcWVxMGw2dVJIU1FXOXlNK3lRZjlKOWhxaU0vRHJS?=
+ =?utf-8?B?NDFnQ0NXUWxselovWnB5RlgzT3NMd0NCZ0t5eHl0ZC8vL2lRaUx3ZFNhWXVi?=
+ =?utf-8?B?U09aRzUySjBjMFVINzhoR3c2ZmN4MzJUMGhKSXVPcXlZMmpkQVJkT0o5cmNB?=
+ =?utf-8?B?aEpJOUx0NVRvVERsdCs0MDhpb1B2cnRqdGZuMDF3Z3BkOHFQbVF6Ni9WL2cz?=
+ =?utf-8?B?K2FlcVFDZDQySnVQaW5mNUVxK2RMWDNTSFhraDg3RGhvZzhxcG9RQUpoZVZB?=
+ =?utf-8?B?WjBKMGFYRGFrTzhJZXVXWFpuc09FZDNXUHUvRUpLUVdCdlpUNDFWRnYrNEtl?=
+ =?utf-8?B?UXpjVXA3Znc0NjQyR0pya3ZGYUk1ZlAwNUpRSE9XNE5qcDNvckI1cys0V3E0?=
+ =?utf-8?B?UDlDZmlzS1ROY3lvbGgzMEFEQmlUR3BzZUhUWkRjcG40MjVZOE9LejFOdWhW?=
+ =?utf-8?B?WmxyblpJd0cxZGZMbzdEQXZYbjRZYjZDTm51cUhtK0hxbDhZemNsa2V5UWJX?=
+ =?utf-8?B?RVR6cit0Tm5jeGxYeGsvY0d3Zy9MZi9rYU1jek44NUVidXhjVnVsNUtvYUND?=
+ =?utf-8?B?RHVsdzlUSTNPc2dFMk0wRXNZeFd5V3ZKbkY1SmNVM2JyRGpCdlI5WmYvbWw0?=
+ =?utf-8?B?L2lXWmpwdk92V2dkNEhXQkVHcklKaUtDVzlyWG1BYTY1dm5xdHQ1TnVKay9J?=
+ =?utf-8?B?Ym0rZThSelVtVEg4djlINHRmWERobE44UkFZVklLZjU3YUxvcUtLZUlYNno5?=
+ =?utf-8?B?N2U3R0hpalNMTlJMenhiN1o4QjNOZjArVWVDa3czZjBySGJIRnI1dkRtZ25x?=
+ =?utf-8?B?Y0xqNlNXYjdTRmtld2FwN0ludUs5TUdyM0ZVQWVFR3NRZ2VWbndzWGliU050?=
+ =?utf-8?B?ZVlTRWRFSmQ5UzZHek16YWRMQUJIZGRONDlMTjZ6bTB4WGYxVjVQZUF3RG5D?=
+ =?utf-8?B?UWN0SmNZSHZLVW9ER0VZcXQ3R2RacFpOcUk1ZmNPUHl4Um1BblIxSmFuNENq?=
+ =?utf-8?B?djVWUE1JS3FWMmNYZWRSY2dEU2d4R3NXazlWVTErYjFCOWhTNmtoZzVSRFdQ?=
+ =?utf-8?B?SjZ1WktRRzFwY1grejRmalV2SkNPY0xtSjFuYzdRNmpFdWt1aTFFTnFmRU1l?=
+ =?utf-8?B?T09hU0x0Zmppc3pubGMxemFPdVE5U1EvUXVRbmV6RVRSUEtvamhzcEd2Wloy?=
+ =?utf-8?B?WWtmWTM0djEzUFlFTXIzZ3NweFpIb0RRR1FiUzl1Nzd0UTdZVFhTeTNEdTF2?=
+ =?utf-8?B?OVVpOCtPckwwVkNUWDNtdU1NTmw1WU4wK0tYMkc2VDNnL0ErN0MxNHozdENM?=
+ =?utf-8?B?dUZVbUZtUHRNYWpuOU13QWR2eHI0bHZWeFpiNFdWZGpkMkNBWk0rd1ErNXMv?=
+ =?utf-8?B?a2U5eC83TE5vREFCS1dHWVM5aWpKT2IrTlZ4QTMxZktpZlVZY0ZZbHlQSDdi?=
+ =?utf-8?B?UDdRQlFYUUpoc2NNa2I5Z040TlZlMG16UnJzbnVlOXNOd1BKVlZXbVM5RTN2?=
+ =?utf-8?B?eFNoK0EzTFJ0MERTbDBQYy9UWmpWcXpaUWIrajFTUGpBTVBaYktFb3RyRGU4?=
+ =?utf-8?Q?mjOszT19U+Uu/9QTwFZLiaWlk?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c825f99-9e4a-4c41-1a4d-08dd8c09f241
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6409.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2025 19:20:50.5576
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6fjlwSLJHTLj0+xg+ZGNZK6FOiSgbej2x8rgb6iKFosv2COVlw3J9cH7/v9Rrsc62Yi4XyUdgDF06n3L+RJdqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPFD91879A44
+
+Verified the patch on AMD reference board.
+
+Tested-By: David Perry <david.perry@amd.com>
+
+> From: Mario Limonciello <mario.limonciello@amd.com>
+>
+> AMD BIOS team has root caused an issue that NVME storage failed to come
+> back from suspend to a lack of a call to _REG when NVME device was probed.
+>
+> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+> added support for calling _REG when transitioning D-states, but this only
+> works if the device actually "transitions" D-states.
+>
+> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+> devices") added support for runtime PM on PCI devices, but never actually
+> 'explicitly' sets the device to D0.
+>
+> To make sure that devices are in D0 and that platform methods such as
+> _REG are called, explicitly set all devices into D0 during initialization.
+>
+> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI devices")
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> v2:
+>   * Move runtime PM calls after setting to D0
+>   * Use pci_pm_power_up_and_verify_state()
+> ---
+>   drivers/pci/pci-driver.c |  6 ------
+>   drivers/pci/pci.c        | 13 ++++++++++---
+>   drivers/pci/pci.h        |  1 +
+>   3 files changed, 11 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index c8bd71a739f72..082918ce03d8a 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
+>   	pci_enable_wake(pci_dev, PCI_D0, false);
+>   }
+>   
+> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> -{
+> -	pci_power_up(pci_dev);
+> -	pci_update_current_state(pci_dev, PCI_D0);
+> -}
+> -
+>   static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>   {
+>   	pci_pm_power_up_and_verify_state(pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index e77d5b53c0cec..8d125998b30b7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>   
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> +{
+> +	pci_power_up(pci_dev);
+> +	pci_update_current_state(pci_dev, PCI_D0);
+> +}
+> +
+>   /**
+>    * pci_pm_init - Initialize PM functions of given PCI device
+>    * @dev: PCI device to handle.
+> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>   	u16 status;
+>   	u16 pmc;
+>   
+> -	pm_runtime_forbid(&dev->dev);
+> -	pm_runtime_set_active(&dev->dev);
+> -	pm_runtime_enable(&dev->dev);
+>   	device_enable_async_suspend(&dev->dev);
+>   	dev->wakeup_prepared = false;
+>   
+> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>   	pci_read_config_word(dev, PCI_STATUS, &status);
+>   	if (status & PCI_STATUS_IMM_READY)
+>   		dev->imm_ready = 1;
+> +	pci_pm_power_up_and_verify_state(dev);
+> +	pm_runtime_forbid(&dev->dev);
+> +	pm_runtime_set_active(&dev->dev);
+> +	pm_runtime_enable(&dev->dev);
+>   }
+>   
+>   static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index b81e99cd4b62a..49165b739138b 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>   void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>   void pci_config_pm_runtime_get(struct pci_dev *dev);
+>   void pci_config_pm_runtime_put(struct pci_dev *dev);
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>   void pci_pm_init(struct pci_dev *dev);
+>   void pci_ea_init(struct pci_dev *dev);
+>   void pci_msi_init(struct pci_dev *dev);
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C4831865E3
+	for <linux-pci@vger.kernel.org>; Mon,  5 May 2025 20:01:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746475272; cv=none; b=KYY9T32idCL+jg4OMbfCptnxUsy0EhPlGdunAoGJCY5sJL0Xo5ZteQXJFwyASASmz2Gg3nfy/3Bh2onpAL7+mXKpaqw/C1WzdXoiKPIm9WHBLIIxBGg7BvOVLL9wy9SXTPw2s/kA+3bg0/rJwVQbeC/TzkbX4mtLXT/a9dR9P3k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746475272; c=relaxed/simple;
+	bh=P9TxQSDgnb1FyG3Y3k5GUcFihDb6ndOOLETMXnemihU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nZIm38sMtawU0MLTB3xSzGnr1YxgxWSP5k5liyoInA16Yxwy++KvcyjfP0kWAUhJfaJ2wAScic+N1kc35pboGRTa9uxoQDbgVqEXwu1oV5T8tlmqXkvzHIj/XzSrptmyjnwXN3aZ2j/CkWOonMJmu9qYYANlsMz2VTQ0R0ALIHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QMHBz1XQ; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QMHBz1XQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE31C4CEE4;
+	Mon,  5 May 2025 20:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746475271;
+	bh=P9TxQSDgnb1FyG3Y3k5GUcFihDb6ndOOLETMXnemihU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=QMHBz1XQfAs0zWkJrGxAGd7lt7ib2FIpnPsVyUWvG2b5AGmR5WmaRtGVMkyxC4265
+	 0WDxYNyH/Ptfif2+cbTK+cGH6RNDIB71ZOCYbS3+eMGEJeVozYx/tR8c4rmpCW6vGf
+	 agsbDPSYVevst/iUf7DO2RHdM1Cr6vtE4m3hzh9IyOCCj7bcH1pXn31ZKqOg9xrm7g
+	 NNsiBar4i26/Sl6qli8xNExqChfk7fPPmxyWczebvk0WN5+04M96t+jslcIG0SMc1Z
+	 IUVWal62I7wwEeJf+13nqIWUxk20tWU++UrTgwF4G/VVFeHzcTrShLVd+Oa1TF7d5k
+	 Qe8AGT474cVxA==
+Message-ID: <61b8d5e1-2e42-477d-bde5-4040f3d9c092@kernel.org>
+Date: Mon, 5 May 2025 15:01:09 -0500
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-pci@vger.kernel.org, "Perry, David" <david.perry@amd.com>,
+ bhelgaas@google.com, rafael.j.wysocki@intel.com,
+ huang.ying.caritas@gmail.com, stern@rowland.harvard.edu
+References: <20250424043232.1848107-1-superm1@kernel.org>
+ <1944cb5c-2352-456d-bf4a-5b39d7ae0fe5@amd.com>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <1944cb5c-2352-456d-bf4a-5b39d7ae0fe5@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+On 5/5/2025 2:20 PM, Perry, David wrote:
+> Verified the patch on AMD reference board.
+> 
+> Tested-By: David Perry <david.perry@amd.com>
+
+Thanks Dave.
+
+> 
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> AMD BIOS team has root caused an issue that NVME storage failed to come
+>> back from suspend to a lack of a call to _REG when NVME device was 
+>> probed.
+>>
+>> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+>> added support for calling _REG when transitioning D-states, but this only
+>> works if the device actually "transitions" D-states.
+>>
+>> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+>> devices") added support for runtime PM on PCI devices, but never actually
+>> 'explicitly' sets the device to D0.
+>>
+>> To make sure that devices are in D0 and that platform methods such as
+>> _REG are called, explicitly set all devices into D0 during 
+>> initialization.
+>>
+>> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI 
+>> devices")
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+
+Bjorn,
+
+We now have some positive testing reports from this on
+
+* Intel system (Denis Benato)
+* Dell system (Yijun Shen)
+* AMD reference system (Dave Perry)
+
+Any comments?
+
+>> v2:
+>>   * Move runtime PM calls after setting to D0
+>>   * Use pci_pm_power_up_and_verify_state()
+>> ---
+>>   drivers/pci/pci-driver.c |  6 ------
+>>   drivers/pci/pci.c        | 13 ++++++++++---
+>>   drivers/pci/pci.h        |  1 +
+>>   3 files changed, 11 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+>> index c8bd71a739f72..082918ce03d8a 100644
+>> --- a/drivers/pci/pci-driver.c
+>> +++ b/drivers/pci/pci-driver.c
+>> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev 
+>> *pci_dev)
+>>       pci_enable_wake(pci_dev, PCI_D0, false);
+>>   }
+>> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+>> -{
+>> -    pci_power_up(pci_dev);
+>> -    pci_update_current_state(pci_dev, PCI_D0);
+>> -}
+>> -
+>>   static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>>   {
+>>       pci_pm_power_up_and_verify_state(pci_dev);
+>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+>> index e77d5b53c0cec..8d125998b30b7 100644
+>> --- a/drivers/pci/pci.c
+>> +++ b/drivers/pci/pci.c
+>> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>>   }
+>>   EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+>> +{
+>> +    pci_power_up(pci_dev);
+>> +    pci_update_current_state(pci_dev, PCI_D0);
+>> +}
+>> +
+>>   /**
+>>    * pci_pm_init - Initialize PM functions of given PCI device
+>>    * @dev: PCI device to handle.
+>> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>>       u16 status;
+>>       u16 pmc;
+>> -    pm_runtime_forbid(&dev->dev);
+>> -    pm_runtime_set_active(&dev->dev);
+>> -    pm_runtime_enable(&dev->dev);
+>>       device_enable_async_suspend(&dev->dev);
+>>       dev->wakeup_prepared = false;
+>> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>>       pci_read_config_word(dev, PCI_STATUS, &status);
+>>       if (status & PCI_STATUS_IMM_READY)
+>>           dev->imm_ready = 1;
+>> +    pci_pm_power_up_and_verify_state(dev);
+>> +    pm_runtime_forbid(&dev->dev);
+>> +    pm_runtime_set_active(&dev->dev);
+>> +    pm_runtime_enable(&dev->dev);
+>>   }
+>>   static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+>> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+>> index b81e99cd4b62a..49165b739138b 100644
+>> --- a/drivers/pci/pci.h
+>> +++ b/drivers/pci/pci.h
+>> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>>   void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>>   void pci_config_pm_runtime_get(struct pci_dev *dev);
+>>   void pci_config_pm_runtime_put(struct pci_dev *dev);
+>> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>>   void pci_pm_init(struct pci_dev *dev);
+>>   void pci_ea_init(struct pci_dev *dev);
+>>   void pci_msi_init(struct pci_dev *dev);
+
+
+From mboxrd@z Thu Jan  1 00:00:00 1970
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9766F396ED6
+	for <linux-pci@vger.kernel.org>; Mon,  5 May 2025 23:06:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746486395; cv=none; b=dESOXoYatd5wF51LZSBo+VHDoUFyDpbECM0QmOZsO4/355jPaaDFLX8IUGyTCPF39TbQpkC0xyxJ+e6NGIhcAT1PXiNs+HfpmO4hl0PPLq2agMcsuoydrqwamdSqvRdsxL0d0qC4hmOTE5/03hbXHoSxNjQ1wSsdir/vUGkiGf8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746486395; c=relaxed/simple;
+	bh=+ng9IX5PYlTkr54csTUOeVzsQtO8Dt8p+/RHtisF7xk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=G+wz6znQ6Bo6fldygWAyMmhfR1dUpTiv081HaWu5YPVwvSrGRbdq6XKDoOp3kkZoRa0EGZbabfHH2h4rI+nKvd47Z8rBNWIFHlfoo4esbHp4ey1klVxBl6sBRG8XwhOU7zBddxXmgKLcZLDioKogxNew2fNb7MMgsS9jaivNUWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rLb11n0X; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rLb11n0X"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61094C4CEED;
+	Mon,  5 May 2025 23:06:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746486394;
+	bh=+ng9IX5PYlTkr54csTUOeVzsQtO8Dt8p+/RHtisF7xk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=rLb11n0XTrGYcIEfiRAkY6OFLnTohFdA3yK73ccWKsIdcSd/dUb1O50XPVHckd64d
+	 cEiX/hHeI0P+FXBVK/KIMmMoUNR+59iruHvBfN4jnV9JakrvaKD7berContfufhSuz
+	 YvYe4G7R8eeztOZMFpZtqPqwbAL47D28HdgmvQFwdTzo94S5SVfXIhwErd3FVl9V9d
+	 ZbK6TpoGy/987zwCC31tXR6K9dlGUMlPdxPIf8mafzsccUM+91MprGwL7uqwJOVIqE
+	 h/Xrzyu0pKrDucNnQl9IES+11q2HWeQHXbMzQdTV5D2Lo5bAQvjVb4UlkcCiOhnkci
+	 4Dc1ZLvO6g29w==
+Date: Mon, 5 May 2025 18:06:32 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: mario.limonciello@amd.com, bhelgaas@google.com,
+	rafael.j.wysocki@intel.com, huang.ying.caritas@gmail.com,
+	stern@rowland.harvard.edu, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v2] PCI: Explicitly put devices into D0 when initializing
+Message-ID: <20250505230632.GA1007257@bhelgaas>
+Precedence: bulk
+X-Mailing-List: linux-pci@vger.kernel.org
+List-Id: <linux-pci.vger.kernel.org>
+List-Subscribe: <mailto:linux-pci+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-pci+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250424043232.1848107-1-superm1@kernel.org>
+
+On Wed, Apr 23, 2025 at 11:31:32PM -0500, Mario Limonciello wrote:
+> From: Mario Limonciello <mario.limonciello@amd.com>
+> 
+> AMD BIOS team has root caused an issue that NVME storage failed to come
+> back from suspend to a lack of a call to _REG when NVME device was probed.
+> 
+> commit 112a7f9c8edbf ("PCI/ACPI: Call _REG when transitioning D-states")
+> added support for calling _REG when transitioning D-states, but this only
+> works if the device actually "transitions" D-states.
+> 
+> commit 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI
+> devices") added support for runtime PM on PCI devices, but never actually
+> 'explicitly' sets the device to D0.
+> 
+> To make sure that devices are in D0 and that platform methods such as
+> _REG are called, explicitly set all devices into D0 during initialization.
+> 
+> Fixes: 967577b062417 ("PCI/PM: Keep runtime PM enabled for unbound PCI devices")
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+
+Applied to pci/pm for v6.16, thanks!
+
+> ---
+> v2:
+>  * Move runtime PM calls after setting to D0
+>  * Use pci_pm_power_up_and_verify_state()
+> ---
+>  drivers/pci/pci-driver.c |  6 ------
+>  drivers/pci/pci.c        | 13 ++++++++++---
+>  drivers/pci/pci.h        |  1 +
+>  3 files changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index c8bd71a739f72..082918ce03d8a 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -555,12 +555,6 @@ static void pci_pm_default_resume(struct pci_dev *pci_dev)
+>  	pci_enable_wake(pci_dev, PCI_D0, false);
+>  }
+>  
+> -static void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> -{
+> -	pci_power_up(pci_dev);
+> -	pci_update_current_state(pci_dev, PCI_D0);
+> -}
+> -
+>  static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
+>  {
+>  	pci_pm_power_up_and_verify_state(pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index e77d5b53c0cec..8d125998b30b7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3192,6 +3192,12 @@ void pci_d3cold_disable(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_d3cold_disable);
+>  
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev)
+> +{
+> +	pci_power_up(pci_dev);
+> +	pci_update_current_state(pci_dev, PCI_D0);
+> +}
+> +
+>  /**
+>   * pci_pm_init - Initialize PM functions of given PCI device
+>   * @dev: PCI device to handle.
+> @@ -3202,9 +3208,6 @@ void pci_pm_init(struct pci_dev *dev)
+>  	u16 status;
+>  	u16 pmc;
+>  
+> -	pm_runtime_forbid(&dev->dev);
+> -	pm_runtime_set_active(&dev->dev);
+> -	pm_runtime_enable(&dev->dev);
+>  	device_enable_async_suspend(&dev->dev);
+>  	dev->wakeup_prepared = false;
+>  
+> @@ -3266,6 +3269,10 @@ void pci_pm_init(struct pci_dev *dev)
+>  	pci_read_config_word(dev, PCI_STATUS, &status);
+>  	if (status & PCI_STATUS_IMM_READY)
+>  		dev->imm_ready = 1;
+> +	pci_pm_power_up_and_verify_state(dev);
+> +	pm_runtime_forbid(&dev->dev);
+> +	pm_runtime_set_active(&dev->dev);
+> +	pm_runtime_enable(&dev->dev);
+>  }
+>  
+>  static unsigned long pci_ea_flags(struct pci_dev *dev, u8 prop)
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index b81e99cd4b62a..49165b739138b 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -148,6 +148,7 @@ void pci_dev_adjust_pme(struct pci_dev *dev);
+>  void pci_dev_complete_resume(struct pci_dev *pci_dev);
+>  void pci_config_pm_runtime_get(struct pci_dev *dev);
+>  void pci_config_pm_runtime_put(struct pci_dev *dev);
+> +void pci_pm_power_up_and_verify_state(struct pci_dev *pci_dev);
+>  void pci_pm_init(struct pci_dev *dev);
+>  void pci_ea_init(struct pci_dev *dev);
+>  void pci_msi_init(struct pci_dev *dev);
+> -- 
+> 2.43.0
+> 
+
