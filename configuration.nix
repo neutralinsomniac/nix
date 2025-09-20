@@ -251,6 +251,7 @@
     "flakes"
   ];
   nix.settings.trusted-users = [ "jeremy" ];
+  nix.settings.max-jobs = 1;
 
   # nix.settings.auto-optimise-store = true;
   # nix.gc = {
