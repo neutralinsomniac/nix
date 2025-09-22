@@ -9,16 +9,18 @@
 
   config = {
     boot.kernelPackages = pkgs.linuxPackages_latest;
-    # boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_6_16.override {
-    # 	argsOverride = rec {
-    # 		src = pkgs.fetchurl {
-    #             	url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
-    #             	sha256 = "sha256-dr/7rn6rKh3h7QVpK+9wn0OwKlL+la5lXKzw+iUiE/M=";
-    # 	};
-    # 	version = "6.16.5";
-    # 	modDirVersion = "6.16.5";
-    # 	};
-    # });
+    # boot.kernelPackages = pkgs.linuxPackagesFor (
+    #   pkgs.linux_6_16.override {
+    #     argsOverride = rec {
+    #       src = pkgs.fetchurl {
+    #         url = "https://git.kernel.org/torvalds/t/linux-${version}.tar.gz";
+    #         sha256 = "sha256-qfy7EKw3nbrLpjbi4zBzMxfU0AaXcNWsamETLyPH3IA=";
+    #       };
+    #       version = "6.17-rc7";
+    #       modDirVersion = "6.17.0-rc7";
+    #     };
+    #   }
+    # );
 
     hardware.asus.flow.gv302x.amdgpu.psr.enable = false;
     boot.kernelParams = [ "amdgpu.dcdebugmask=0x600" ];
