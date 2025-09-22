@@ -252,7 +252,7 @@
       "flakes"
     ];
     trusted-users = [ "jeremy" ];
-    max-jobs = 4;
+    max-jobs = 1;
   };
 
   nix.channel.enable = false;
