@@ -246,12 +246,16 @@
 
   system.rebuild.enableNg = true;
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nix.settings.trusted-users = [ "jeremy" ];
-  nix.settings.max-jobs = 1;
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [ "jeremy" ];
+    max-jobs = 4;
+  };
+
+  nix.channel.enable = false;
 
   # nix.settings.auto-optimise-store = true;
   # nix.gc = {
