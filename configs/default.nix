@@ -7,6 +7,7 @@
     ./ghostty.nix
     ./helix.nix
     ./jj.nix
+    ./lxc.nix
     ./logitech.nix
     ./nh.nix
     # ./openra.nix
