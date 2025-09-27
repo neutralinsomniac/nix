@@ -157,6 +157,9 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+
+  programs.mosh.enable = true;
+
   environment.systemPackages = with pkgs; [
 
     (callPackage ida-pro {
@@ -192,7 +195,6 @@
     man-pages
     man-pages-posix
     moonlight-qt
-    mosh
     mpv
     ncdu
     nil
