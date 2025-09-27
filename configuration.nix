@@ -161,7 +161,6 @@
   programs.mosh.enable = true;
 
   environment.systemPackages = with pkgs; [
-
     (callPackage ida-pro {
       # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
       runfile = fetchurl {
@@ -205,10 +204,11 @@
     pipx
     protobuf
     python313
-    ssh-to-age
     signal-desktop
     sops
     spotify
+    sshfs
+    ssh-to-age
     tcpdump
     tidal-hifi
     tmux
