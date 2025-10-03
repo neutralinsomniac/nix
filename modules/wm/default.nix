@@ -1,10 +1,11 @@
 { lib, ... }:
 {
   imports = [
-    ./gnome.nix
-    ./i3_xfce.nix
-    ./hyprland.nix
     ./cosmic.nix
+    ./gnome.nix
+    ./hyprland.nix
+    ./i3_xfce.nix
+    ./niri.nix
     ./plasma.nix
   ];
 
@@ -15,6 +16,7 @@
         "gnome"
         "hyprland"
         "i3-xfce"
+        "niri"
         "plasma"
         "windowmaker"
       ];
