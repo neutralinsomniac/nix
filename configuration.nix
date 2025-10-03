@@ -9,7 +9,6 @@
   pkgs,
   ...
 }:
-
 {
   # this allows you to access `pkgsUnstable` anywhere in your config
   _module.args.pkgsUnstable = import inputs.nixpkgs-unstable {
@@ -200,7 +199,6 @@
     nixfmt-rfc-style
     nixpkgs-review
     p7zip
-    pidgin
     pipx
     protobuf
     python313
@@ -243,7 +241,6 @@
     39849
     8000
   ];
-  networking.firewall.allowedUDPPorts = [ 5298 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 

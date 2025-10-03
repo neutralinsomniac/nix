@@ -11,6 +11,7 @@
     ./logitech.nix
     ./nh.nix
     # ./openra.nix
+    ./pidgin.nix
     # ./renoise.nix
     ./ssh.nix
     ./steam.nix
