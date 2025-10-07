@@ -3,6 +3,7 @@
   imports = [
     ./chromium.nix
     ./distrobox.nix
+    ./firefox.nix
     ./git.nix
     ./ghostty.nix
     ./helix.nix
