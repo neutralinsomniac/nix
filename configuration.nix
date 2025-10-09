@@ -200,6 +200,7 @@
     pipx
     protobuf
     python313
+    ripgrep
     signal-desktop
     sops
     spotify
