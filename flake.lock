@@ -176,16 +176,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1743946931,
-        "narHash": "sha256-Rsxqr9CdXvU36jPrLny2CEOR1v6eQGlHfHkRpUubMwM=",
+        "lastModified": 1758125965,
+        "narHash": "sha256-OGriNp3Q/eSo8JL5qeRbgVNB49SMO3qbfd50wVQBm0s=",
         "owner": "msanft",
         "repo": "ida-pro-overlay",
-        "rev": "3382a4aa39861162dedadc506cb9bfe08e69757d",
+        "rev": "b69522edab2be3afe06396468fde48a55edbb488",
         "type": "github"
       },
       "original": {
         "owner": "msanft",
-        "ref": "v9.1.0.250226",
+        "ref": "v9.2.0.250908",
         "repo": "ida-pro-overlay",
         "type": "github"
       }
