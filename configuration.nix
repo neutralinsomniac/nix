@@ -117,8 +117,6 @@
       "audio"
     ];
     initialPassword = "password!";
-    # packages = with pkgs; [
-    # ];
   };
 
   environment.variables = {
