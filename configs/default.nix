@@ -1,4 +1,3 @@
-{ ... }:
 {
   imports = [
     ./chromium.nix
