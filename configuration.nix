@@ -190,6 +190,7 @@
     gopls
     man-pages
     man-pages-posix
+    minicom
     moonlight-qt
     mpv
     ncdu
