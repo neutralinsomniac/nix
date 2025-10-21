@@ -15,6 +15,7 @@
     # ./renoise.nix
     ./ssh.nix
     ./steam.nix
+    ./udev.nix
     ./virt-manager.nix
     ./tailscale.nix
     # ./virtualbox.nix
