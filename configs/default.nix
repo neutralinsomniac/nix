@@ -4,8 +4,8 @@
     ./discord.nix
     ./distrobox.nix
     ./firefox.nix
-    ./git.nix
     ./ghostty.nix
+    ./git.nix
     ./helix.nix
     ./ida.nix
     ./jj.nix
@@ -18,11 +18,12 @@
     ./ssh.nix
     ./steam.nix
     ./tidal.nix
+    ./syncthing.nix
+    ./tailscale.nix
     ./udev.nix
     ./virt-manager.nix
-    ./tailscale.nix
     # ./virtualbox.nix
-    # ./wireplumber.nix
     ./vm.nix
+    # ./wireplumber.nix
   ];
 }
