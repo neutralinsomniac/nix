@@ -1,7 +1,7 @@
 {
   pkgs,
-  # inputs,
-  pkgsUnstable,
+  inputs,
+  # pkgsUnstable,
   ...
 }:
 let
