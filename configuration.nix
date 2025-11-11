@@ -25,7 +25,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -67,7 +67,7 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  services.printing.drivers = [ pkgs.cnijfilter2 ];
+  services.printing.drivers = lib.mkIf (pkgs.stdenv.hostPlatform == "x86_64-linux") [ pkgs.cnijfilter2 ];
 
   # discover network printers
   services.avahi = {
@@ -158,14 +158,6 @@
   programs.mosh.enable = true;
 
   environment.systemPackages = with pkgs; [
-    (callPackage ida-pro {
-      # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
-      runfile = fetchurl {
-        url = "https://pintobyte.com/tmp/ida-pro_92_x64linux.run";
-        hash = "sha256-qt0PiulyuE+U8ql0g0q/FhnzvZM7O02CdfnFAAjQWuE=";
-      };
-    })
-
     _0xproto
     aircrack-ng
     alsa-utils
@@ -177,8 +169,6 @@
     chromium
     clang
     darktable
-    discord
-    dsniff
     ethtool
     ettercap
     ffmpeg
@@ -204,11 +194,9 @@
     ripgrep
     signal-desktop
     sops
-    spotify
     sshfs
     ssh-to-age
     tcpdump
-    tidal-hifi
     tmux
     tytools # for uploading firmware to m8
     ultimate-oldschool-pc-font-pack

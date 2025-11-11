@@ -10,6 +10,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
+    nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
+
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -44,15 +46,14 @@
     inputs@{
       self,
       nixpkgs,
+      nixpkgs-unstable,
+      nixos-apple-silicon,
       nix-index-database,
       ...
     }:
-    let
-      lib = nixpkgs.lib;
-    in
     {
       nixosConfigurations =
-        lib.genAttrs
+        nixpkgs.lib.genAttrs
           [
             "x270"
             "xps13"
@@ -66,7 +67,7 @@
           ]
           (
             hostName:
-            lib.nixosSystem {
+            nixpkgs.lib.nixosSystem {
               system = "x86_64-linux";
               specialArgs = { inherit inputs; };
               modules = [
@@ -79,6 +80,26 @@
                 { system.configurationRevision = self.rev or "dirty"; }
               ];
             }
-          );
+          ) //
+          nixpkgs.lib.genAttrs
+          [
+            "m1"
+          ]
+          (
+              hostName:
+              nixos-apple-silicon.inputs.nixpkgs.lib.nixosSystem {
+                system = "aarch64-linux";
+                specialArgs = { inherit inputs; };
+                modules = [
+                  { networking.hostName = hostName; }
+                  inputs.disko.nixosModules.disko
+                  ./hw/${hostName}
+                  ./configuration.nix
+                  nix-index-database.nixosModules.nix-index
+                  { programs.nix-index-database.comma.enable = true; }
+                  { system.configurationRevision = self.rev or "dirty"; }
+                ];
+              }
+            );
     };
 }

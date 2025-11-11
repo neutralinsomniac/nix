@@ -5,7 +5,7 @@
   ...
 }:
 let
-  helixPkg = inputs.helix.packages.x86_64-linux.default;
+  helixPkg = inputs.helix.packages."${pkgs.system}".default;
   # helixPkg = pkgs.helix;
   # helixPkg = pkgsUnstable.helix;
 
