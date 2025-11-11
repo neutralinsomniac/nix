@@ -21,6 +21,10 @@ in
       ];
     };
 
+    environment.systemPackages = with pkgs; [
+      ncspot
+    ];
+
     zramSwap.enable = true;
 
     boot.loader.systemd-boot.enable = true;
