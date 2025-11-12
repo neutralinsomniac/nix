@@ -4,7 +4,7 @@
   ...
 }:
 {
-  environment.systemPackages = lib.mkIf (pkgs.stdenv.hostPlatform == "x86_64-linux") [
+  environment.systemPackages = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
     pkgs.discord
   ];
 }

@@ -4,7 +4,7 @@
   ...
 }:
 {
-  environment.systemPackages = lib.mkIf (pkgs.stdenv.hostPlatform == "x86_64-linux") [
+  environment.systemPackages = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
     (pkgs.callPackage pkgs.ida-pro {
       # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
       runfile = pkgs.fetchurl {

@@ -67,7 +67,9 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  services.printing.drivers = lib.mkIf (pkgs.stdenv.hostPlatform == "x86_64-linux") [ pkgs.cnijfilter2 ];
+  services.printing.drivers = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+    pkgs.cnijfilter2
+  ];
 
   # discover network printers
   services.avahi = {
