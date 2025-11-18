@@ -1,5 +1,6 @@
 {
   imports = [
+    ./alvr.nix
     ./chromium.nix
     ./distrobox.nix
     ./firefox.nix
