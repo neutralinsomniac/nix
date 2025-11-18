@@ -191,7 +191,7 @@ in
       moonlight-qt
       mpv
       ncdu
-      nil
+      nixd
       nixfmt-rfc-style
       nixpkgs-review
       p7zip
