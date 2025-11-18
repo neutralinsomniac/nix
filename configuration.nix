@@ -9,12 +9,15 @@
   pkgs,
   ...
 }:
-{
-  # this allows you to access `pkgsUnstable` anywhere in your config
-  _module.args.pkgsUnstable = import inputs.nixpkgs-unstable {
+let
+  pkgsUnstable = import inputs.nixpkgs-unstable {
     inherit (pkgs.stdenv.hostPlatform) system;
     inherit (config.nixpkgs) config;
   };
+in
+{
+  # this allows you to access `pkgsUnstable` anywhere in your config
+  _module.args.pkgsUnstable = pkgsUnstable;
 
   imports = [
     ./wm/plasma.nix
