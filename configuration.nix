@@ -168,6 +168,7 @@ in
       _0xproto
       aircrack-ng
       alsa-utils
+      android-tools
       binwalk
       bitwarden-desktop
       blanket

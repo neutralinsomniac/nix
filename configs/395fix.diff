@@ -1,0 +1,12 @@
+diff --git a/alvr/server_openvr/cpp/platform/linux/EncodePipelineVAAPI.cpp b/alvr/server_openvr/cpp/platform/linux/EncodePipelineVAAPI.cpp
+index 6b02c859a8..084bee2cb2 100644
+--- a/alvr/server_openvr/cpp/platform/linux/EncodePipelineVAAPI.cpp
++++ b/alvr/server_openvr/cpp/platform/linux/EncodePipelineVAAPI.cpp
+@@ -395,6 +395,7 @@
+         filter_in, mapped_frame, AV_BUFFERSRC_FLAG_PUSH | AV_BUFFERSRC_FLAG_KEEP_REF
+     );
+     if (err != 0) {
++        return;
+         throw alvr::AvException("av_buffersrc_add_frame failed", err);
+     }
+     err = av_buffersink_get_frame(filter_out, encoder_frame);
