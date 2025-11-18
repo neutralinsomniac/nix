@@ -162,68 +162,74 @@ in
 
   programs.mosh.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    _0xproto
-    aircrack-ng
-    alsa-utils
-    binwalk
-    bitwarden-desktop
-    blanket
-    caligula
-    catgirl
-    chromium
-    clang
-    darktable
-    ethtool
-    ettercap
-    ffmpeg
-    file
-    gdb
-    gh
-    ghidra
-    go
-    gopls
-    man-pages
-    man-pages-posix
-    minicom
-    moonlight-qt
-    mpv
-    ncdu
-    nil
-    nixfmt-rfc-style
-    nixpkgs-review
-    p7zip
-    pipx
-    protobuf
-    python313
-    ripgrep
-    signal-desktop
-    sops
-    sshfs
-    ssh-to-age
-    tcpdump
-    tmux
-    tytools # for uploading firmware to m8
-    ultimate-oldschool-pc-font-pack
-    unzip
-    vdhcoapp
-    vim
-    wget
-    wireshark
-    wl-clipboard
-    yt-dlp
-  ] ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-    discord
-    tidal-hifi
-    spotify
-    (pkgs.callPackage pkgs.ida-pro {
-      # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
-      runfile = pkgs.fetchurl {
-        url = "https://pintobyte.com/tmp/ida-pro_92_x64linux.run";
-        hash = "sha256-qt0PiulyuE+U8ql0g0q/FhnzvZM7O02CdfnFAAjQWuE=";
-      };
-    })
-  ];
+  environment.systemPackages =
+    with pkgs;
+    [
+      _0xproto
+      aircrack-ng
+      alsa-utils
+      binwalk
+      bitwarden-desktop
+      blanket
+      caligula
+      catgirl
+      chromium
+      clang
+      darktable
+      ethtool
+      ettercap
+      ffmpeg
+      file
+      gdb
+      gh
+      ghidra
+      go
+      gopls
+      man-pages
+      man-pages-posix
+      minicom
+      moonlight-qt
+      mpv
+      ncdu
+      nil
+      nixfmt-rfc-style
+      nixpkgs-review
+      p7zip
+      pipx
+      protobuf
+      python313
+      ripgrep
+      signal-desktop
+      sops
+      sshfs
+      ssh-to-age
+      tcpdump
+      tmux
+      tytools # for uploading firmware to m8
+      ultimate-oldschool-pc-font-pack
+      unzip
+      vdhcoapp
+      vim
+      wget
+      wireshark
+      wl-clipboard
+      yt-dlp
+    ]
+    ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+      discord
+      tidal-hifi
+      spotify
+      (pkgs.callPackage pkgs.ida-pro {
+        # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
+        runfile = pkgs.fetchurl {
+          url = "https://pintobyte.com/tmp/ida-pro_92_x64linux.run";
+          hash = "sha256-qt0PiulyuE+U8ql0g0q/FhnzvZM7O02CdfnFAAjQWuE=";
+        };
+      })
+    ]
+    ++ [
+      pkgsUnstable.zed-editor
+    ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
