@@ -1,6 +1,6 @@
 {
   imports = [
-    ./alvr.nix
+    # ./alvr.nix
     ./chromium.nix
     ./distrobox.nix
     ./firefox.nix
@@ -21,7 +21,7 @@
     ./virt-manager.nix
     # ./virtualbox.nix
     ./vm.nix
-    ./wivrn.nix
+    # ./wivrn.nix
     # ./wireplumber.nix
   ];
 }
