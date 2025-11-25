@@ -40,6 +40,11 @@
       url = "github:msanft/ida-pro-overlay/v9.2.0.250908";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ke = {
+      url = "github:kisom/ke";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -80,12 +85,13 @@
                 { system.configurationRevision = self.rev or "dirty"; }
               ];
             }
-          ) //
+          )
+        //
           nixpkgs.lib.genAttrs
-          [
-            "m1"
-          ]
-          (
+            [
+              "m1"
+            ]
+            (
               hostName:
               nixos-apple-silicon.inputs.nixpkgs.lib.nixosSystem {
                 system = "aarch64-linux";

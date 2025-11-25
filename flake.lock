@@ -225,6 +225,26 @@
         "type": "github"
       }
     },
+    "ke": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764107488,
+        "narHash": "sha256-/VhZDTKYkbOVjdGQJqQk8TCytTrMsIi3LW/UXbSpxQE=",
+        "owner": "kisom",
+        "repo": "ke",
+        "rev": "66c79e0762ec47fe28a924c8c3952f707aa215b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kisom",
+        "repo": "ke",
+        "type": "github"
+      }
+    },
     "musnix": {
       "inputs": {
         "nixpkgs": "nixpkgs_5"
@@ -458,6 +478,7 @@
         "helix": "helix",
         "ida-pro-overlay": "ida-pro-overlay",
         "jujutsu": "jujutsu",
+        "ke": "ke",
         "musnix": "musnix",
         "nix-index-database": "nix-index-database",
         "nixos-apple-silicon": "nixos-apple-silicon",

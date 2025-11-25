@@ -186,6 +186,7 @@ in
       ghidra
       go
       gopls
+      inputs.ke.packages.x86_64-linux.default
       man-pages
       man-pages-posix
       minicom
