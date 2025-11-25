@@ -13,7 +13,7 @@
       "RestoreOnStartup" = 1; # open last session
     };
     extensions = [
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock origin
+      "ddkjiahejlhfcafbddmgiahcphecmpfh" # ublock origin lite
       "nngceckbapebfimnlniiiahkandclblb" # bitwarden
       "nlffgllnjjkheddehpolbanogdeaogbc" # backspace to go back
       "fnaicdffflnofjppbagibeoednhnbjhg" # floccus
