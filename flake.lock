@@ -225,24 +225,24 @@
         "type": "github"
       }
     },
-    "ke": {
+    "kte": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1764537499,
-        "narHash": "sha256-UOMNHbyQt1FeOFTzzuWUWCUnn9FFpXVUdH070bFLDt0=",
-        "owner": "kisom",
-        "repo": "ke",
-        "rev": "f2bd4e1132fcf562af017cb5f78243cf41b73485",
-        "type": "github"
+        "lastModified": 1764668264,
+        "narHash": "sha256-zWrRCqBIzU2ZkmqvIGPvALmXTIscPAV21YGNr2GRE4M=",
+        "ref": "refs/heads/master",
+        "rev": "0bfe75fbf04e0daab9f94c334aae1af11a4379b3",
+        "revCount": 63,
+        "type": "git",
+        "url": "https://git.wntrmute.dev/kyle/kte"
       },
       "original": {
-        "owner": "kisom",
-        "repo": "ke",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.wntrmute.dev/kyle/kte"
       }
     },
     "musnix": {
@@ -478,7 +478,7 @@
         "helix": "helix",
         "ida-pro-overlay": "ida-pro-overlay",
         "jujutsu": "jujutsu",
-        "ke": "ke",
+        "kte": "kte",
         "musnix": "musnix",
         "nix-index-database": "nix-index-database",
         "nixos-apple-silicon": "nixos-apple-silicon",

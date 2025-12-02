@@ -41,8 +41,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ke = {
-      url = "github:kisom/ke";
+    kte = {
+      url = "git+https://git.wntrmute.dev/kyle/kte";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
