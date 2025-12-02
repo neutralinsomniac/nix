@@ -5,7 +5,7 @@
   ...
 }:
 let
-  helixPkg = inputs.helix.packages."${pkgs.system}".default;
+  helixPkg = inputs.helix.packages."${pkgs.stdenv.hostPlatform.system}".default;
   # helixPkg = pkgs.helix;
   # helixPkg = pkgsUnstable.helix;
 
