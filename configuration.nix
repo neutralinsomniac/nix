@@ -174,7 +174,7 @@ in
       blanket
       caligula
       catgirl
-      chromium
+      (chromium.override { enableWideVine = true; })
       clang
       darktable
       ethtool
