@@ -177,6 +177,7 @@ in
       (chromium.override { enableWideVine = true; })
       clang
       darktable
+      duckstation
       ethtool
       ettercap
       ffmpeg
