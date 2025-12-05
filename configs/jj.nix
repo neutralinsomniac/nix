@@ -1,13 +1,13 @@
 {
   pkgs,
-  inputs,
-  # pkgsUnstable,
+  # inputs,
+  pkgsUnstable,
   ...
 }:
 let
-  jjPkg = pkgs.jujutsu;
-  # jjPkg = pkgsUnstable.jujutsu;
-  # jjPkg = inputs.jujutsu.packages."${pkgs.system}".default;
+  # jjPkg = pkgs.jujutsu;
+  jjPkg = pkgsUnstable.jujutsu;
+  # jjPkg = inputs.jujutsu.packages."${pkgs.stdenv.hostPlatform.system}".default;
 
   jjConfig = pkgs.writeText "config.toml" ''
     [user]
