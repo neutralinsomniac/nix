@@ -470,6 +470,26 @@
         "type": "indirect"
       }
     },
+    "raptorboost": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765600925,
+        "narHash": "sha256-StE969v0/7sR8PWb/zW/ainGLJN5WPwzmhqP77A/neE=",
+        "owner": "neutralinsomniac",
+        "repo": "raptorboost",
+        "rev": "23840311f30f8dc340f1725a67c95b96219191ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "repo": "raptorboost",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
@@ -484,7 +504,8 @@
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_7",
-        "nixpkgs-unstable": "nixpkgs-unstable_2"
+        "nixpkgs-unstable": "nixpkgs-unstable_2",
+        "raptorboost": "raptorboost"
       }
     },
     "rust-overlay": {

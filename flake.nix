@@ -45,13 +45,17 @@
       url = "git+https://git.wntrmute.dev/kyle/kte";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    raptorboost = {
+      url = "github:neutralinsomniac/raptorboost";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     inputs@{
       self,
       nixpkgs,
-      nixpkgs-unstable,
       nixos-apple-silicon,
       nix-index-database,
       ...

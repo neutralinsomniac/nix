@@ -202,6 +202,7 @@ in
       pipx
       protobuf
       python313
+      inputs.raptorboost.packages.x86_64-linux.default
       ripgrep
       signal-desktop
       sops
