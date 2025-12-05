@@ -12,6 +12,7 @@
     ./nh.nix
     # ./openra.nix
     ./pidgin.nix
+    ./prismlauncher.nix
     # ./renoise.nix
     ./ssh.nix
     ./steam.nix
