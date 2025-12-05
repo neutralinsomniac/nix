@@ -174,6 +174,7 @@ in
       blanket
       caligula
       catgirl
+      chiaki-ng
       (chromium.override { enableWideVine = true; })
       clang
       darktable
