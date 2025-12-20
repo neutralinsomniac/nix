@@ -222,7 +222,7 @@ in
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
       discord
-      tidal-hifi
+      # tidal-hifi
       spotify
       (pkgs.callPackage pkgs.ida-pro {
         # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
