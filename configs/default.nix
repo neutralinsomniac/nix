@@ -14,6 +14,7 @@
     ./pidgin.nix
     ./prismlauncher.nix
     # ./renoise.nix
+    ./reticulum.nix
     ./ssh.nix
     ./steam.nix
     ./syncthing.nix
