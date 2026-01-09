@@ -19,6 +19,7 @@
     ./steam.nix
     ./syncthing.nix
     ./tailscale.nix
+    ./tintin.nix
     ./udev.nix
     ./virt-manager.nix
     # ./virtualbox.nix
