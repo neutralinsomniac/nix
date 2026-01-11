@@ -231,9 +231,6 @@ in
           hash = "sha256-qt0PiulyuE+U8ql0g0q/FhnzvZM7O02CdfnFAAjQWuE=";
         };
       })
-    ]
-    ++ [
-      pkgsUnstable.zed-editor
     ];
 
   # Some programs need SUID wrappers, can be configured further or are
