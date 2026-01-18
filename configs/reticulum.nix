@@ -18,13 +18,13 @@
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (pyfinal: pyprev: {
           rns = pyfinal.callPackage pyprev.rns.overridePythonAttrs rec {
-            version = "1.1.2";
+            version = "1.1.3";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "Reticulum";
               tag = version;
-              hash = "sha256-KX6g9RGPHg3W/gzVaVoPBMpmPQs2jEJaDFDlA6D9Ql8=";
+              hash = "sha256-Iz/1mSCww/v6wsRTG5j55IRTOjQ6y2eOlBda/CcwsOE=";
             };
           };
 
