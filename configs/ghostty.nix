@@ -5,7 +5,7 @@
 }:
 let
   # ghosttyPkg = inputs.ghostty-mjrochford.packages.x86_64-linux.default;
-  ghosttyPkg = inputs.ghostty.packages.x86_64-linux.default;
+  ghosttyPkg = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
   # ghosttyPkg = pkgs.ghostty;
 
   ghosttyConfig = pkgs.writeText "config" ''

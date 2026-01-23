@@ -178,7 +178,6 @@ in
       (chromium.override { enableWideVine = true; })
       clang
       darktable
-      duckstation
       ethtool
       ettercap
       ffmpeg
@@ -188,7 +187,7 @@ in
       ghidra
       go
       gopls
-      inputs.kte.packages.x86_64-linux.full
+      inputs.kte.packages.${pkgs.stdenv.hostPlatform.system}.full
       man-pages
       man-pages-posix
       minicom
@@ -202,7 +201,7 @@ in
       pipx
       protobuf
       python313
-      inputs.raptorboost.packages.x86_64-linux.default
+      inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
       signal-desktop
       sops
@@ -222,6 +221,7 @@ in
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
       discord
+      duckstation
       # tidal-hifi
       spotify
       (pkgs.callPackage pkgs.ida-pro {
@@ -263,8 +263,6 @@ in
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
-
-  system.rebuild.enableNg = true;
 
   nix.settings = {
     experimental-features = [
