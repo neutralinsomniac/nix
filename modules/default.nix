@@ -13,7 +13,6 @@
     # ./openra.nix
     ./pidgin.nix
     ./prismlauncher.nix
-    # ./renoise.nix
     ./reticulum.nix
     ./ssh
     ./steam.nix

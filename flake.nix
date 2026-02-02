@@ -19,21 +19,12 @@
       url = "github:ghostty-org/ghostty";
     };
 
-    # Remove once this PR (https://github.com/ghostty-org/ghostty/pull/4845) is merged
-    ghostty-mjrochford = {
-      url = "github:mjrochford/ghostty/xdg-system-config";
-    };
-
     helix = {
       url = "github:helix-editor/helix";
     };
 
     jujutsu = {
       url = "github:jj-vcs/jj";
-    };
-
-    musnix = {
-      url = "github:musnix/musnix";
     };
 
     ida-pro-overlay = {
