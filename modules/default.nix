@@ -24,6 +24,7 @@
     ./virt-manager.nix
     # ./virtualbox.nix
     ./vm.nix
+    ./wm
     # ./wivrn.nix
     # ./wireplumber.nix
   ];

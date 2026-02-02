@@ -20,9 +20,10 @@ in
   _module.args.pkgsUnstable = pkgsUnstable;
 
   imports = [
-    ./wm/plasma.nix
     ./modules
   ];
+
+  mywm = "plasma";
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
