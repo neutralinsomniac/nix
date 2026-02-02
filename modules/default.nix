@@ -4,10 +4,10 @@
     ./chromium.nix
     ./distrobox.nix
     ./firefox.nix
-    ./ghostty.nix
+    ./ghostty
     ./git.nix
-    ./helix.nix
-    ./jj.nix
+    ./helix
+    ./jj
     ./logitech.nix
     ./nh.nix
     # ./openra.nix
@@ -15,11 +15,11 @@
     ./prismlauncher.nix
     # ./renoise.nix
     ./reticulum.nix
-    ./ssh.nix
+    ./ssh
     ./steam.nix
     ./syncthing.nix
     ./tailscale.nix
-    ./tintin.nix
+    ./tintin
     ./udev.nix
     ./virt-manager.nix
     # ./virtualbox.nix

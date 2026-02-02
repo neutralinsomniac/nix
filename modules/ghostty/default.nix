@@ -8,26 +8,14 @@ let
   ghosttyPkg = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
   # ghosttyPkg = pkgs.ghostty;
 
-  ghosttyConfig = pkgs.writeText "config" ''
-    gtk-single-instance = true
-    theme = carbonfox
-    font-family = "MxPlus IBM VGA 9x16"
-  '';
-
-  xdgDir = pkgs.linkFarm "ghostty-config" [
-    {
-      name = "ghostty/config";
-      path = ghosttyConfig;
-    }
-  ];
+  ghosttyConfig = ./config;
 
   ghosttyWrapped = pkgs.symlinkJoin {
     name = "ghostty";
     paths = [ ghosttyPkg ];
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/ghostty \
-      --add-flags "--config-file=${xdgDir}/ghostty/config"
+      wrapProgram $out/bin/ghostty --add-flags "--config-file=${ghosttyConfig}"
     '';
   };
 in

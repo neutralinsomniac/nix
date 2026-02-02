@@ -1,19 +1,25 @@
 {
   pkgs,
+  pkgsUnstable,
   ...
 }:
 let
   sshPkg = pkgs.openssh;
 
-  sshConfig = ./config;
+  sshConfig = pkgs.writeText "config" ''
+    Host pintobyte.com
+    Port 2345
+  '';
 
   sshWrapped = pkgs.symlinkJoin {
     name = "ssh";
     paths = [ sshPkg ];
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/ssh --add-flags "-F ${sshConfig}"
-      wrapProgram $out/bin/scp  --add-flags "-F ${sshConfig}"
+      wrapProgram $out/bin/ssh \
+      --add-flags "-F ${sshConfig}" && \
+      wrapProgram $out/bin/scp \
+      --add-flags "-F ${sshConfig}"
     '';
   };
 in

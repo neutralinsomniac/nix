@@ -1,0 +1,39 @@
+[user]
+name = "Jeremy O'Brien"
+email = "neutral@fastmail.com"
+
+[ui]
+bookmark-list-sort-keys = ["committer-date-"]
+default-command = "log"
+diff-formatter = ":git"
+
+[git]
+write-change-id-header = true
+
+[revset-aliases]
+'closest_bookmark(to)' = 'heads(::to & bookmarks())'
+'unmerged(from)' = '::from ~ ::trunk()'
+'contains(c)' = '(bookmarks() | tags()) & c::'
+
+[aliases]
+shortlog = ["log", "-n", "20"]
+up = ["rebase", "-b", "@", "-d", "trunk()"]
+a = ["log", "-r", "all()"]
+l = ["log", '-r', 'roots(trunk()..@)-::(trunk()|@)']
+tug = ["bookmark", "move", "--from", "closest_bookmark(@-)", "--to", "@-"]
+flat = ["log", "--no-graph", "-T", "builtin_log_oneline"]
+ra = ["rebase", "-b", "author('neutral@fastmail.com') & mutable() & heads(::)", "-d", "trunk()"]
+fa = ["git", "fetch", "--all-remotes"]
+incoming = ["log", "-r", "@..trunk()"]
+pn = ["git", "push", "--allow-new"]
+# contains = ["log", "-r", "contains(@-)", "-T", "'self.bookmarks()'", "--no-graph"]
+
+[templates]
+draft_commit_description = """
+concat(
+  description,
+  surround(
+    "\nJJ: This commit contains the following changes:\n", "",
+    indent("JJ:     ", diff.stat(72)),
+  ),
+)"""

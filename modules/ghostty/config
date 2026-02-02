@@ -1,0 +1,3 @@
+gtk-single-instance = true
+theme = carbonfox
+font-family = "MxPlus IBM VGA 9x16"
