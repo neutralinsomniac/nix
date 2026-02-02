@@ -21,7 +21,7 @@ in
 
   imports = [
     ./wm/plasma.nix
-    ./configs
+    ./modules
   ];
 
   # Bootloader.
