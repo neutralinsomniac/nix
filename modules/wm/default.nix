@@ -16,6 +16,7 @@
         "hyprland"
         "i3-xfce"
         "plasma"
+        "windowmaker"
       ];
     };
   };
