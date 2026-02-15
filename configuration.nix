@@ -131,7 +131,13 @@ in
   };
 
   # direnv
-  programs.direnv.enable = true;
+  programs.direnv = {
+    enable = true;
+    silent = true;
+    nix-direnv = {
+      enable = true;
+    };
+  };
 
   programs.command-not-found.enable = false;
   programs.bash = {
