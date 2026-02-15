@@ -139,11 +139,9 @@ in
     };
   };
 
-  programs.command-not-found.enable = false;
   programs.bash = {
     interactiveShellInit = ''
       source <(COMPLETE=bash jj)
-      source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
       export PATH="$HOME/.local/bin:$PATH"
     '';
   };
