@@ -17,7 +17,7 @@
     services.supergfxd.enable = false;
 
     # this driver is buggy as heck # maybe not on 6.17?
-    boot.blacklistedKernelModules = [ "hid_asus" ];
+    # boot.blacklistedKernelModules = [ "hid_asus" ];
 
     hardware.bluetooth.enable = true;
   };
