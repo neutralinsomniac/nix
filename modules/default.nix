@@ -14,6 +14,7 @@
     ./pidgin.nix
     ./prismlauncher.nix
     ./reticulum.nix
+    ./secure-boot.nix
     ./ssh
     ./steam.nix
     ./syncthing.nix
