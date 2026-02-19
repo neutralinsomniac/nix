@@ -15,8 +15,6 @@
     hardware.framework.amd-7040.preventWakeOnAC = true;
     # hardware.framework.laptop13.audioEnhancement.enable = true;
     hardware.bluetooth.enable = true;
-    # until the sddm issue gets fixed
-    services.fprintd.enable = false;
     boot.kernelPackages = lib.mkIf (lib.versionOlder pkgs.linux.version "6.15") pkgs.linuxPackages_latest;
   };
 }
