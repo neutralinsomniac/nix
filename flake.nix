@@ -15,32 +15,20 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
+    ghostty.url = "github:ghostty-org/ghostty";
 
-    helix = {
-      url = "github:helix-editor/helix";
-    };
+    helix.url = "github:helix-editor/helix";
 
-    jujutsu = {
-      url = "github:jj-vcs/jj";
-    };
+    jujutsu.url = "github:jj-vcs/jj";
 
-    ida-pro-overlay = {
-      url = "github:msanft/ida-pro-overlay/v9.2.0.250908";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    ida-pro-overlay.url = "github:msanft/ida-pro-overlay/v9.2.0.250908";
+    ida-pro-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-    kte = {
-      url = "git+https://git.wntrmute.dev/kyle/kte";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    kte.url = "git+https://git.wntrmute.dev/kyle/kte";
+    kte.inputs.nixpkgs.follows = "nixpkgs";
 
-    raptorboost = {
-      url = "github:neutralinsomniac/raptorboost";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    raptorboost.url = "github:neutralinsomniac/raptorboost";
+    raptorboost.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
