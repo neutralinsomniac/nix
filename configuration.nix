@@ -166,6 +166,7 @@ in
   # $ nix search wget
 
   programs.mosh.enable = true;
+  networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
 
   environment.systemPackages =
     with pkgs;
