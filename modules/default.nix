@@ -9,6 +9,7 @@
     ./helix
     ./jj
     ./logitech.nix
+    ./micasa.nix
     ./nh.nix
     # ./openra.nix
     ./pidgin.nix
