@@ -1,6 +1,7 @@
 {
   imports = [
     # ./alvr.nix
+    ./babyshark.nix
     ./chromium.nix
     ./distrobox.nix
     ./firefox.nix
