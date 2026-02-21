@@ -13,6 +13,7 @@
     ./micasa.nix
     ./nh.nix
     # ./openra.nix
+    ./ollama.nix
     ./pidgin.nix
     ./prismlauncher.nix
     ./reticulum.nix
