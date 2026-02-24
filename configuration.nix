@@ -203,6 +203,7 @@ in
       nixd
       nixfmt
       nixpkgs-review
+      ocaml
       p7zip
       pipx
       protobuf
