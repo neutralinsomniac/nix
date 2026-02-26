@@ -32,6 +32,9 @@
 
     raptorboost.url = "github:neutralinsomniac/raptorboost";
     raptorboost.inputs.nixpkgs.follows = "nixpkgs";
+
+    exocortex.url = "github:neutralinsomniac/exocortex";
+    exocortex.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
