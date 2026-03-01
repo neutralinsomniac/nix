@@ -1,12 +1,13 @@
 {
-  inputs,
   pkgs,
+  pkgsUnstable,
   ...
 }:
 let
   # ghosttyPkg = inputs.ghostty-mjrochford.packages.x86_64-linux.default;
-  ghosttyPkg = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # ghosttyPkg = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
   # ghosttyPkg = pkgs.ghostty;
+  ghosttyPkg = pkgsUnstable.ghostty;
 
   ghosttyConfig = ./config;
 
