@@ -194,7 +194,7 @@ in
       ghidra
       go
       gopls
-      inputs.kte.packages.${pkgs.stdenv.hostPlatform.system}.full
+      # inputs.kte.packages.${pkgs.stdenv.hostPlatform.system}.full
       man-pages
       man-pages-posix
       minicom
@@ -229,7 +229,7 @@ in
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
       discord
-      duckstation
+      # duckstation
       # tidal-hifi
       spotify
       (pkgs.callPackage pkgs.ida-pro {

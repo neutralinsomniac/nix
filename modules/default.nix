@@ -14,7 +14,7 @@
     ./nh.nix
     # ./openra.nix
     ./ocaml.nix
-    ./ollama.nix
+    # ./ollama.nix
     ./pidgin.nix
     ./prismlauncher.nix
     ./reticulum.nix
