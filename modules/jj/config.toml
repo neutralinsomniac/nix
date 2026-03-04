@@ -32,11 +32,4 @@ pn = ["git", "push", "--allow-new"]
 # contains = ["log", "-r", "contains(@-)", "-T", "'self.bookmarks()'", "--no-graph"]
 
 [templates]
-draft_commit_description = """
-concat(
-  description,
-  surround(
-    "\nJJ: This commit contains the following changes:\n", "",
-    indent("JJ:     ", diff.stat(72)),
-  ),
-)"""
+draft_commit_description = "builtin_draft_commit_description_with_diff"
