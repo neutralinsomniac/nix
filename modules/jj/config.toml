@@ -10,6 +10,9 @@ diff-formatter = ":git"
 [git]
 write-change-id-header = true
 
+[revsets]
+bookmark-advance-to = "@-"
+
 [revset-aliases]
 'closest_bookmark(to)' = 'heads(::to & bookmarks())'
 'unmerged(from)' = '::from ~ ::trunk()'
