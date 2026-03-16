@@ -7,6 +7,7 @@
     ./i3_xfce.nix
     ./niri.nix
     ./plasma.nix
+    ./sway.nix
   ];
 
   options = {
@@ -18,6 +19,7 @@
         "i3-xfce"
         "niri"
         "plasma"
+        "sway"
         "windowmaker"
       ];
     };
