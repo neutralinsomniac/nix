@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1773637053,
-        "narHash": "sha256-Oxj8ujDUrKWjkda0VFsqfanbtzrU0EDD7kuZhkbyBDA=",
+        "lastModified": 1773936055,
+        "narHash": "sha256-FSkqrA3ub51ceFumFhX49gpLqa9y8s4ZTaBcdYNqLfA=",
         "owner": "neutralinsomniac",
         "repo": "exocortex",
-        "rev": "c7f4d505d2daae320bf824c6e7048879d24c5574",
+        "rev": "04013d451744a9fe49c7d008ceabfbb067f17a52",
         "type": "github"
       },
       "original": {
