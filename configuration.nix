@@ -186,7 +186,7 @@ in
       darktable
       ethtool
       ettercap
-      inputs.exocortex.packages.${pkgs.stdenv.hostPlatform.system}.exobt
+      inputs.exocortex.packages.${pkgs.stdenv.hostPlatform.system}.exo
       ffmpeg
       file
       gdb
