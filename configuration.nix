@@ -218,7 +218,6 @@ in
       tcpdump
       tmux
       tytools # for uploading firmware to m8
-      ultimate-oldschool-pc-font-pack
       unzip
       vdhcoapp
       vim
@@ -240,6 +239,10 @@ in
         };
       })
     ];
+
+  fonts.packages = with pkgs; [
+    ultimate-oldschool-pc-font-pack
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
