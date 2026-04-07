@@ -234,8 +234,8 @@ in
       (pkgs.callPackage pkgs.ida-pro {
         # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
         runfile = pkgs.fetchurl {
-          url = "https://pintobyte.com/tmp/ida-pro_92_x64linux.run";
-          hash = "sha256-qt0PiulyuE+U8ql0g0q/FhnzvZM7O02CdfnFAAjQWuE=";
+          url = "https://pintobyte.com/tmp/ida-pro_93_x64linux.run";
+          hash = "sha256-LtQ65LuE103K5vAJkhDfqNYb/qSVL1+aB6mq4Wy3D4I=";
         };
       })
     ];
