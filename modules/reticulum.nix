@@ -22,7 +22,7 @@
     (final: prev: {
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (pyfinal: pyprev: {
-          rns = pyfinal.callPackage pyprev.rns.overridePythonAttrs rec {
+          rns = pyprev.rns.overridePythonAttrs rec {
             version = "1.1.3";
 
             src = pkgs.fetchFromGitHub {
@@ -33,7 +33,7 @@
             };
           };
 
-          lxmf = pyfinal.callPackage pyprev.lxmf.overridePythonAttrs {
+          lxmf = pyprev.lxmf.overridePythonAttrs {
             version = "0.9.4";
 
             src = pkgs.fetchFromGitHub {
@@ -44,16 +44,18 @@
             };
           };
 
-          nomadnet = pyfinal.callPackage pyprev.nomadnet.overridePythonAttrs {
-            version = "0.9.7";
+          nomadnet = pyprev.nomadnet.overridePythonAttrs (old: {
+            version = "0.9.9";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "NomadNet";
-              rev = "70baa59ac2913cb0007862d76b75e086bfa51f7b";
-              hash = "sha256-lvGladjiQaX0y2X3ttZ3DDxPOLGN2Ru5j/UmrzOxwbU=";
+              rev = "c7e473452ae6d142e22f3c5cbafd12a481cacc82";
+              hash = "sha256-qLe9fnIE9kY9JerAAH318dq1SOshP9xX3l/2c91fnSA=";
             };
-          };
+
+            dependencies = old.dependencies ++ [ pkgs.python3Packages.msgpack ];
+          });
         })
       ];
     })
