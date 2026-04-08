@@ -5,6 +5,9 @@
     nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    import-tree.url = "github:vic/import-tree";
+
     nix-wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     nix-wrapper-modules.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -43,64 +46,6 @@
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      nixos-apple-silicon,
-      nix-index-database,
-      ...
-    }:
-    {
-      nixosConfigurations =
-        nixpkgs.lib.genAttrs
-          [
-            "x270"
-            "xps13"
-            "x1"
-            "theseus"
-            "corp"
-            "devnet"
-            "micropc"
-            "sgo"
-            "leviathan"
-          ]
-          (
-            hostName:
-            nixpkgs.lib.nixosSystem {
-              system = "x86_64-linux";
-              specialArgs = { inherit inputs; };
-              modules = [
-                { networking.hostName = hostName; }
-                inputs.disko.nixosModules.disko
-                ./hw/${hostName}
-                ./configuration.nix
-                nix-index-database.nixosModules.nix-index
-                { programs.nix-index-database.comma.enable = true; }
-                { system.configurationRevision = self.rev or "dirty"; }
-              ];
-            }
-          )
-        //
-          nixpkgs.lib.genAttrs
-            [
-              "m1"
-            ]
-            (
-              hostName:
-              nixos-apple-silicon.inputs.nixpkgs.lib.nixosSystem {
-                system = "aarch64-linux";
-                specialArgs = { inherit inputs; };
-                modules = [
-                  { networking.hostName = hostName; }
-                  inputs.disko.nixosModules.disko
-                  ./hw/${hostName}
-                  ./configuration.nix
-                  nix-index-database.nixosModules.nix-index
-                  { programs.nix-index-database.comma.enable = true; }
-                  { system.configurationRevision = self.rev or "dirty"; }
-                ];
-              }
-            );
-    };
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; }
+    (inputs.import-tree ./hosts);
 }

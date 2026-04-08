@@ -1,27 +1,26 @@
 { lib, ... }:
+let
+  dir = builtins.readDir ./.;
+  toImport = name: type:
+    let path = ./. + "/${name}"; in
+    if name == "default.nix" then [ ]
+    else if lib.hasPrefix "_" name then [ ]
+    else if type == "regular" && lib.hasSuffix ".nix" name then [ path ]
+    else [ ];
+in
 {
-  imports = [
-    ./cosmic.nix
-    ./gnome.nix
-    ./hyprland.nix
-    ./i3_xfce.nix
-    ./niri.nix
-    ./plasma.nix
-    ./sway.nix
-  ];
+  imports = lib.flatten (lib.mapAttrsToList toImport dir);
 
-  options = {
-    mywm = lib.mkOption {
-      type = lib.types.enum [
-        "cosmic"
-        "gnome"
-        "hyprland"
-        "i3-xfce"
-        "niri"
-        "plasma"
-        "sway"
-        "windowmaker"
-      ];
-    };
+  options.mywm = lib.mkOption {
+    type = lib.types.enum [
+      "cosmic"
+      "gnome"
+      "hyprland"
+      "i3-xfce"
+      "niri"
+      "plasma"
+      "sway"
+      "windowmaker"
+    ];
   };
 }
