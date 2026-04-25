@@ -34,6 +34,7 @@
       ghidra
       go
       gopls
+      libreoffice
       # inputs.kte.packages.${pkgs.stdenv.hostPlatform.system}.full
       man-pages
       man-pages-posix
