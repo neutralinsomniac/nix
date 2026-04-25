@@ -23,35 +23,35 @@
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (pyfinal: pyprev: {
           rns = pyprev.rns.overridePythonAttrs rec {
-            version = "1.1.3";
+            version = "1.1.9";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "Reticulum";
               tag = version;
-              hash = "sha256-Iz/1mSCww/v6wsRTG5j55IRTOjQ6y2eOlBda/CcwsOE=";
+              hash = "sha256-JYBXk/IOL+XVhvF1qEs/1H9VMWbfLQmIPrLJgJv2ZBw=";
             };
           };
 
-          lxmf = pyprev.lxmf.overridePythonAttrs {
-            version = "0.9.4";
+          lxmf = pyprev.lxmf.overridePythonAttrs rec {
+            version = "0.9.6";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "lxmf";
-              rev = "72853fcf77b1653dcfb33d83390b4539fd71178e";
-              hash = "sha256-QVz0w1FNQ5tAH8ANmmE1Q2nW9WTRIwDvqRa+vuze31k=";
+              tag = version;
+              hash = "sha256-Q84v1CkyEYpW4QdtOD6zp7bn4UzMDeS9Q8fO91BnuPA=";
             };
           };
 
-          nomadnet = pyprev.nomadnet.overridePythonAttrs (old: {
-            version = "0.9.9";
+          nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
+            version = "0.9.11";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "NomadNet";
-              rev = "c7e473452ae6d142e22f3c5cbafd12a481cacc82";
-              hash = "sha256-qLe9fnIE9kY9JerAAH318dq1SOshP9xX3l/2c91fnSA=";
+              tag = version;
+              hash = "sha256-vIV3FEvwqd2je/DzGWeshEx5Tb+DhOQIg7l0LbffEwY=";
             };
 
             dependencies = old.dependencies ++ [ pkgs.python3Packages.msgpack ];
