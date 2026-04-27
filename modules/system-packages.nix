@@ -60,7 +60,6 @@
       tmux
       tytools # for uploading firmware to m8
       unzip
-      vdhcoapp
       vim
       wget
       wireshark
