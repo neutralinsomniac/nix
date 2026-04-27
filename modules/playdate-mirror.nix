@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  lib,
   ...
 }:
 let
@@ -30,5 +31,7 @@ let
     };
 in
 {
-  environment.systemPackages = [ playdate-mirror ];
+  environment.systemPackages = lib.mkIf (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
+    playdate-mirror
+  ];
 }
