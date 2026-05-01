@@ -47,6 +47,9 @@
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; }
-    (inputs.import-tree ./hosts);
+  outputs = inputs:
+    let
+      lib = inputs.nixpkgs.lib.extend (final: prev: import ./hosts/_lib.nix inputs);
+    in
+    inputs.flake-parts.lib.mkFlake { inherit inputs; specialArgs = { inherit lib; }; } (inputs.import-tree ./hosts);
 }

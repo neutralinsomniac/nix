@@ -1,7 +1,6 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, inputs, ... }:
 {
-  flake.nixosConfigurations.theseus = mkHost {
+  flake.nixosConfigurations.theseus = lib.mkHost {
     name = "theseus";
     extraModules = [
       inputs.nixos-hardware.nixosModules.framework-13-7040-amd

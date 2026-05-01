@@ -1,7 +1,6 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, inputs, ... }:
 {
-  flake.nixosConfigurations.corp = mkHost {
+  flake.nixosConfigurations.corp = lib.mkHost {
     name = "corp";
     extraModules = [
       (inputs.self + "/hw/corp/disk-config.nix")

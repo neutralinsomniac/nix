@@ -1,7 +1,6 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, inputs, ... }:
 {
-  flake.nixosConfigurations.leviathan = mkHost {
+  flake.nixosConfigurations.leviathan = lib.mkHost {
     name = "leviathan";
     extraModules = [
       inputs.nixos-hardware.nixosModules.asus-flow-gv302x-amdgpu

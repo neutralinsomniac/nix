@@ -1,7 +1,6 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, inputs, ... }:
 {
-  flake.nixosConfigurations.sgo = mkHost {
+  flake.nixosConfigurations.sgo = lib.mkHost {
     name = "sgo";
     extraModules = [
       inputs.nixos-hardware.nixosModules.microsoft-surface-go

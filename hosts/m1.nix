@@ -1,7 +1,6 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, inputs, ... }:
 {
-  flake.nixosConfigurations.m1 = mkHost {
+  flake.nixosConfigurations.m1 = lib.mkHost {
     name = "m1";
     system = "aarch64-linux";
     nixpkgs = inputs.nixos-apple-silicon.inputs.nixpkgs;

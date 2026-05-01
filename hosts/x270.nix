@@ -1,5 +1,4 @@
-{ inputs, ... }:
-let inherit (import ./_lib.nix inputs) mkHost; in
+{ lib, ... }:
 {
-  flake.nixosConfigurations.x270 = mkHost { name = "x270"; };
+  flake.nixosConfigurations.x270 = lib.mkHost { name = "x270"; };
 }

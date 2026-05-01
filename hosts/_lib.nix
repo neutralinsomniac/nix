@@ -1,5 +1,4 @@
-inputs:
-{
+inputs: {
   mkHost =
     {
       name,
@@ -22,6 +21,7 @@ inputs:
         inputs.nix-index-database.nixosModules.nix-index
         { programs.nix-index-database.comma.enable = true; }
         { system.configurationRevision = inputs.self.rev or "dirty"; }
-      ] ++ extraModules;
+      ]
+      ++ extraModules;
     };
 }
