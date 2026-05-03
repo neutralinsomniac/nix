@@ -6,6 +6,8 @@
 }:
 {
   config = lib.mkIf (config.mywm == "sway") {
+    useKwallet = true;
+
     environment.systemPackages = with pkgs; [
       wl-clipboard
       mako
@@ -15,8 +17,6 @@
       enable = true;
       wrapperFeatures.gtk = true;
     };
-
-    services.gnome.gnome-keyring.enable = true;
 
     # autologin
     services.getty = {

@@ -10,24 +10,7 @@ let
 in
 {
   config = lib.mkIf (config.mywm == "niri") {
-    security.polkit.enable = true; # polkit
-
-    security = {
-      pam = {
-        services = {
-          swaylock = { };
-          "jeremy" = {
-            kwallet = {
-              enable = true;
-              package = pkgs.kdePackages.kwallet-pam;
-              forceRun = true;
-            };
-          };
-        };
-      };
-    };
-
-    xdg.portal.extraPortals = with pkgs; [ kdePackages.xdg-desktop-portal-kde ];
+    useKwallet = true;
 
     programs.niri = {
       enable = true;
