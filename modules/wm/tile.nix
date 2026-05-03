@@ -6,20 +6,13 @@
 }:
 {
   config = lib.mkIf (config.mywm == "tile") {
-    environment.sessionVariables = {
-      XDG_CURRENT_DESKTOP = "KDE";
-      KDE_SESSION_VERSION = "6";
-    };
-    security.pam.services.lightdm.kwallet.enable = true;
+    useKwallet = true;
 
     services.xserver.windowManager.tile = {
       enable = true;
       extraPackages = with pkgs; [
         dmenu
         i3lock
-        kdePackages.kwallet
-        kdePackages.kwalletmanager
-        kdePackages.kwallet-pam
         networkmanagerapplet
       ];
       terminal.package = pkgs.alacritty;
@@ -256,7 +249,6 @@
         # exec strip                                           # the status bar
         exec nm-applet
         exec xrandr --dpi 144
-        ${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init
       '';
     };
   };
