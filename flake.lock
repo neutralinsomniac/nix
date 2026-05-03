@@ -276,6 +276,45 @@
         "type": "github"
       }
     },
+    "glass": {
+      "inputs": {
+        "glyph": "glyph",
+        "nixpkgs": [
+          "tile",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777834038,
+        "narHash": "sha256-Nw06KlPXoKpw0LQ3d2hDgI8JhYJyX+h4EMKve56h9BI=",
+        "owner": "neutralinsomniac",
+        "repo": "glass",
+        "rev": "1181bd8e6a422ecac4a4d79ff938f6a4c3304ece",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "ref": "nix",
+        "repo": "glass",
+        "type": "github"
+      }
+    },
+    "glyph": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777813453,
+        "narHash": "sha256-o1Ip97Eb678DP6K9I7X1lXnbGnJvdEKL9rUfH11FDpA=",
+        "owner": "isene",
+        "repo": "glyph",
+        "rev": "a2d3ab7023881ff13f6cc51c9756121da9f1d58e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "isene",
+        "repo": "glyph",
+        "type": "github"
+      }
+    },
     "gomod2nix": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -744,7 +783,8 @@
         "nixpkgs-2505": "nixpkgs-2505",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia",
-        "raptorboost": "raptorboost"
+        "raptorboost": "raptorboost",
+        "tile": "tile"
       }
     },
     "rust-overlay": {
@@ -898,6 +938,28 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "tile": {
+      "inputs": {
+        "glass": "glass",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1777838250,
+        "narHash": "sha256-ZJmERkemaIAwKfkAuFlYCElYkN8Gop4npF1eiN3hlf8=",
+        "owner": "neutralinsomniac",
+        "repo": "tile",
+        "rev": "5eec3a3332796ebba88c6cf528a9f84b54bcdcb9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "ref": "nix",
+        "repo": "tile",
         "type": "github"
       }
     },

@@ -21,6 +21,7 @@ in
 
   imports = [
     ./modules
+    inputs.tile.nixosModules.default
   ];
 
   # Bootloader.

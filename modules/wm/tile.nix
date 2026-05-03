@@ -1,0 +1,263 @@
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+{
+  config = lib.mkIf (config.mywm == "tile") {
+    environment.sessionVariables = {
+      XDG_CURRENT_DESKTOP = "KDE";
+      KDE_SESSION_VERSION = "6";
+    };
+    security.pam.services.lightdm.kwallet.enable = true;
+
+    services.xserver.windowManager.tile = {
+      enable = true;
+      extraPackages = with pkgs; [
+        dmenu
+        i3lock
+        kdePackages.kwallet
+        kdePackages.kwalletmanager
+        kdePackages.kwallet-pam
+        networkmanagerapplet
+      ];
+      terminal.package = pkgs.alacritty;
+      config = ''
+        # tile config — copy to ~/.tilerc and edit.
+        #
+        # Phase 1b.3b.1 supports these statements:
+        #   bind <chord> <action> [arg]    keybinding
+        #   exec <command line>            autostart (run once at tile start)
+        #   key = value                    bar / palette settings
+        #   # ...                          comment
+        #
+        # Chord syntax: modifiers and key joined by '+'. Modifier names are
+        # case-sensitive. Recognised modifiers:
+        #   Shift, Ctrl (or Control), Alt (or Mod1), Mod4 (or Win, Super)
+        #
+        # Key names: any single ASCII printable character (a-z, A-Z, 0-9, !,
+        # `, ~, etc.) OR one of the named keys: Return, Escape, space, Tab,
+        # BackSpace, Delete, Left, Right, Up, Down, Home, End, Page_Up,
+        # Page_Down, F1-F12, plus, minus, underscore, equal, comma, period,
+        # less, greater, slash, backslash, semicolon, apostrophe, bracketleft,
+        # bracketright.
+        #
+        # Actions:
+        #   exec <cmdline>           fork+execve via /bin/sh -c
+        #   exec-here <cmdline>      same as exec, but the child starts in the
+        #                            cwd of the focused window's bare shell
+        #                            (read from glass's _TILE_SHELL_PID
+        #                            property + /proc/PID/cwd). Falls back to
+        #                            plain exec if the focused window doesn't
+        #                            advertise a shell PID.
+        #   kill                     close the focused window cleanly (WM_DELETE_WINDOW)
+        #   exit                     exit tile
+        #   workspace N              switch to workspace N (1..9, 0 = workspace 10)
+        #   workspace next-populated walk to the next non-empty workspace
+        #   workspace prev-populated walk to the previous non-empty workspace
+        #   workspace back-and-forth toggle to the previously-active workspace
+        #   move-to N                move the focused window to workspace N
+        #   focus next-tab           cycle to the next tab on the current workspace
+        #   focus prev-tab           cycle to the previous tab
+        #   focus right|left|up|down move focus geometrically. In TABBED any
+        #                            direction cycles sequentially (right/down
+        #                            go forward, left/up go back). In SPLIT_H
+        #                            only right/left act; in SPLIT_V only
+        #                            up/down act. The off-axis direction is a
+        #                            silent no-op.
+        #   move-tab left            reorder the focused tab one slot to the left
+        #   move-tab right           reorder the focused tab one slot to the right
+        #   tab-color-cycle          bump the focused tab's colour to the next
+        #                            entry in tab_palette (mirrors glass's Alt+b
+        #                            for terminal backgrounds)
+        #   stash                    hide the focused window (replaces i3's
+        #                            scratchpad — pushes onto a small LIFO)
+        #   unstash                  pop the most-recently-stashed window back
+        #                            onto the current workspace
+        #   layout tabbed            current workspace shows one window at a time
+        #                            (the active tab); navigate with focus
+        #                            next-tab / prev-tab
+        #   layout split-h           current workspace shows ALL its windows
+        #                            side-by-side in equal-width vertical strips
+        #   layout split-v           current workspace shows ALL its windows
+        #                            stacked in equal-height horizontal strips
+        #   layout master            first window on the left as "master" (50%
+        #                            of width by default), the rest stacked as
+        #                            equal-height strips on the right. Set
+        #                            master_ratio = N (10..90) to tweak.
+        #   layout toggle            cycle TABBED → SPLIT_H → SPLIT_V → MASTER → TABBED
+        #   spawn-split DIR CMD      switch the workspace to a split layout and
+        #                            spawn CMD into the slot just next to the
+        #                            focused window. DIR is one of right, left,
+        #                            (→ split-h) up, down (→ split-v).
+        #   reload                   re-read ~/.tilerc without restarting tile.
+        #                            Equivalent to `pkill -USR1 tile`. Refreshes
+        #                            keybindings, palette/colours, pin overrides
+        #                            and the bar; deliberately does NOT re-run
+        #                            `exec` autostart (so strip / feh / nm-applet
+        #                            don't get spawned twice). Lines tile can't
+        #                            parse are ignored with a warning written
+        #                            to stderr (visible if tile is launched from
+        #                            a terminal).
+
+        # === Spawn ===
+        # Mod4+Return: new glass; if workspace is in split mode, lands to the right
+        #              (planned: phase 1b.3b.x split-aware exec).
+        bind Mod4+Return        exec alacritty
+        # Mod4+Shift+Return: new glass starting in the cwd of the focused glass's bare.
+        bind Mod4+Shift+Return  exec-here alacritty
+
+        # === Window management ===
+        bind Mod4+q             kill
+        bind Mod4+Shift+q       exit
+
+        # === Tabs (within a workspace) ===
+        bind Mod4+l       focus next-tab
+        bind Mod4+h       focus prev-tab
+        bind Mod4+Shift+h move-tab left
+        bind Mod4+Shift+l move-tab right
+
+        # === Workspaces (Mod4 + 1..0) ===
+        bind Mod4+1             workspace 1
+        bind Mod4+2             workspace 2
+        bind Mod4+3             workspace 3
+        bind Mod4+4             workspace 4
+        bind Mod4+5             workspace 5
+        bind Mod4+6             workspace 6
+        bind Mod4+7             workspace 7
+        bind Mod4+8             workspace 8
+        bind Mod4+9             workspace 9
+        bind Mod4+0             workspace 10
+
+        # Cycle workspaces.
+        bind Mod4+Right         workspace next-populated
+        bind Mod4+Left          workspace prev-populated
+
+        # === Move focused window to workspace ===
+        bind Mod4+Shift+1       move-to 1
+        bind Mod4+Shift+2       move-to 2
+        bind Mod4+Shift+3       move-to 3
+        bind Mod4+Shift+4       move-to 4
+        bind Mod4+Shift+5       move-to 5
+        bind Mod4+Shift+6       move-to 6
+        bind Mod4+Shift+7       move-to 7
+        bind Mod4+Shift+8       move-to 8
+        bind Mod4+Shift+9       move-to 9
+        bind Mod4+Shift+0       move-to 10
+
+        # === Layout ===
+        bind Mod4+Tab           layout toggle
+
+        # === Focus direction ===
+        bind Mod4+Shift+Right   focus right
+        bind Mod4+Shift+Left    focus left
+        bind Mod4+Shift+Up      focus up
+        bind Mod4+Shift+Down    focus down
+
+        # === Spawn into split (phase 1b.3b.1) ===
+        bind Mod4+r             spawn-split right glass
+        bind Mod4+l             spawn-split left  glass
+        # bind Mod4+u             spawn-split up    glass
+        # bind Mod4+d             spawn-split down  glass
+        bind Mod4+d exec dmenu_run
+
+        # === Tab colors (the row-of-squares bar at the top) ===
+        bind Mod4+c             tab-color-cycle
+
+        # === Stash (replaces i3's scratchpad) ===
+        bind Mod4+i             stash
+        bind Mod4+o             unstash
+
+        # === Lock screen ===
+        bind Mod4+Escape        exec i3lock -c 000000
+
+        # === Reload config without restarting tile ===
+        # Re-grabs keys, refreshes colours/pin overrides/bar; doesn't re-run
+        # autostart. Equivalent to `pkill -USR1 tile`.
+        bind Mod4+Shift+r       reload
+
+        # === Bar (the row-of-squares strip at the top of the screen) ===
+        # bar_height       = strip thickness in pixels (also the side length of each square)
+        # bar_pad          = horizontal padding inside the bar — pixels left clear
+        #                    before the leftmost tab and after the rightmost
+        #                    workspace square (default 4)
+        # bar_bg           = background color of the strip
+        # tab_default      = colour for newly-spawned (uncoloured) tabs
+        # tab_dim_factor   = inactive-tab brightness, 0..100 (40 = 40%)
+        # tab_palette      = comma-separated list of tab colours that
+        #                    `tab-color-cycle` rotates through
+        # ws_active        = colour of the current-workspace square
+        # ws_populated     = colour of any other populated workspace
+
+        bar_height       = 40
+        # bar_pad          = 4
+        # gap_inner        = 0           # pixels of padding around managed windows
+        # bar_bg           = #000000
+        # tab_default      = #555555
+        # tab_dim_factor   = 40
+        # tab_palette      = #ff5555,#50fa7b,#bd93f9,#ffb86c,#8be9fd,#f1fa8c,#ff79c6,#9aedfe
+        # ws_active        = #ffffff
+        # ws_populated     = #555555
+
+        # === Focus border ===
+        # A thin border around every managed window. The focused one shows
+        # border_focused; everyone else shows border_unfocused. Useful in split
+        # layouts to see at a glance which window has keyboard focus.
+        # border_width = 0 disables the feature entirely.
+        border_width     = 1
+        border_focused   = #ffffff
+        border_unfocused = #222222
+
+        # === Master/stack layout ===
+        # master_ratio = percent of workspace width given to the master pane
+        # (clamped 10..90). Stack pane gets the rest.
+        master_ratio     = 50
+
+        # === Workspace pinning ===
+        # pin <ws> <output_index>
+        #   Pin workspace <ws> (0 = WS 10) to output index <output_index>
+        #   (0 = primary / laptop, 1+ = additional outputs in Xinerama order).
+        #   Without any `pin` lines, all workspaces default to output 0 except
+        #   WS 10 which is auto-pinned to output 1 when a second monitor exists.
+        #   Indices beyond output_count are clamped to output 0 so a `pin` line
+        #   for an unplugged monitor still leaves the workspace reachable.
+        #
+        # pin 0 1                        # WS 10 → external (default)
+        # pin 9 1                        # WS 9 also lives on external
+
+        # === Window-to-workspace assignments ===
+        # assign <class> <ws>
+        #   New windows whose WM_CLASS class half matches <class> land on
+        #   workspace <ws> (1..9, or 0 = WS 10) regardless of which workspace
+        #   is currently focused. The window only becomes the active tab if
+        #   <ws> is currently visible on its pinned output; otherwise it joins
+        #   that workspace's tab strip and shows up in the bar's populated
+        #   indicator. Up to 32 entries.
+        #
+        # Example (matches the i3 setup):
+        # assign Weechat  1
+        # assign discord  1
+        # assign caprine  1
+        # assign Kastrup  2
+        # assign Tock     2
+        # assign Firefox  3
+        # assign firefox  3              # case-sensitive — list both for Mozilla
+        # assign qutebrowser 3
+
+        # === Stash-on-map ===
+        # stash-on-map <class>
+        #   New windows whose class matches <class> are immediately stashed
+        #   instead of joining a workspace. Replaces i3's
+        #   `for_window [class="X"] move scratchpad`. Recall with `unstash`.
+        # stash-on-map FirefoxMarionette
+
+        # === Autostart ===
+        # exec strip                                           # the status bar
+        exec nm-applet
+        exec xrandr --dpi 144
+        ${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init
+      '';
+    };
+  };
+}

@@ -45,11 +45,18 @@
 
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
+
+    tile.url = "github:neutralinsomniac/tile/nix";
+    tile.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs:
+  outputs =
+    inputs:
     let
       lib = inputs.nixpkgs.lib.extend (final: prev: import ./hosts/_lib.nix inputs);
     in
-    inputs.flake-parts.lib.mkFlake { inherit inputs; specialArgs = { inherit lib; }; } (inputs.import-tree ./hosts);
+    inputs.flake-parts.lib.mkFlake {
+      inherit inputs;
+      specialArgs = { inherit lib; };
+    } (inputs.import-tree ./hosts);
 }
