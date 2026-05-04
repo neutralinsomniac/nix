@@ -4,7 +4,7 @@ inputs: {
       name,
       system ? "x86_64-linux",
       nixpkgs ? inputs.nixpkgs,
-      mywm ? "i3",
+      mywm ? "sway",
       extraModules ? [ ],
     }:
     nixpkgs.lib.nixosSystem {
