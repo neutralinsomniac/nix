@@ -46,7 +46,6 @@ in
 
     environment.systemPackages = with pkgs; [
       noctalia
-      alacritty
       fuzzel
       swaylock
       mako

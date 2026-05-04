@@ -13,7 +13,6 @@
     [
       _0xproto
       aircrack-ng
-      alacritty
       alsa-utils
       android-tools
       binwalk
