@@ -53,7 +53,7 @@
   outputs =
     inputs:
     let
-      lib = inputs.nixpkgs.lib.extend (final: prev: import ./hosts/_lib.nix inputs);
+      lib = inputs.nixpkgs.lib.extend (final: prev: import ./modules/_lib.nix inputs);
     in
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
