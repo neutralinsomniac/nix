@@ -21,7 +21,10 @@
       caligula
       catgirl
       chiaki-ng
-      (chromium.override { enableWideVine = true; })
+      (chromium.override {
+        enableWideVine = true;
+        commandLineArgs = "--password-store=kwallet6";
+      })
       clang
       darktable
       ethtool
@@ -52,7 +55,9 @@
       python313
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
-      signal-desktop
+      (signal-desktop.override {
+        commandLineArgs = "--password-store=kwallet6";
+      })
       sops
       sshfs
       ssh-to-age
