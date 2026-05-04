@@ -154,9 +154,9 @@
         bindsym XF86MonBrightnessUp exec light -A 10
 
         # Volume
-        bindsym XF86AudioRaiseVolume exec 'pactl set-sink-volume @DEFAULT_SINK@ +1%'
-        bindsym XF86AudioLowerVolume exec 'pactl set-sink-volume @DEFAULT_SINK@ -1%'
-        bindsym XF86AudioMute exec 'pactl set-sink-mute @DEFAULT_SINK@ toggle'
+        bindsym XF86AudioRaiseVolume exec 'wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+'
+        bindsym XF86AudioLowerVolume exec 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-'
+        bindsym XF86AudioMute exec 'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle'
 
         input type:touchpad {
         	tap enabled
@@ -185,8 +185,15 @@
         interval = 5
       }
 
+      order += "volume master"
       order += "battery all"
       order += "tztime local"
+
+      volume master {
+        format = "♪ %volume"
+        format_muted = "♪ muted"
+        device = "pulse"
+      }
 
       battery all {
         format = "%status %percentage %remaining"
