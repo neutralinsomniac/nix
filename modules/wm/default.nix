@@ -24,7 +24,7 @@ in
       "enlightenment"
       "gnome"
       "hyprland"
-      "i3-xfce"
+      "i3"
       "niri"
       "plasma"
       "sway"
