@@ -120,6 +120,7 @@ in
       "wheel"
       "dialout"
       "audio"
+      "video"
     ];
     initialPassword = "password!";
   };
