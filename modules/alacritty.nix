@@ -19,5 +19,8 @@
     [font.normal]
     family = "Hack"
     style = "Regular"
+
+    [keyboard]
+    bindings = [ { key = "Return", mods = "Shift", chars = "\n" } ]
   '';
 }
