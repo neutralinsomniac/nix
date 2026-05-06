@@ -127,24 +127,8 @@
         exec nm-applet
         exec xsetroot -solid darkgrey
         exec swayidle -w before-sleep 'swaylock -c 000000 -f'
+        exec waybar -c /etc/waybar/config -s /etc/waybar/style.css
 
-        # Start i3bar to display a workspace bar (plus the system information i3status
-        # finds out, if available)
-        bar {
-          swaybar_command swaybar
-          status_command i3status -c /etc/i3status.conf
-      		position top
-          font pango:Hack 12
-          colors {
-            separator #666666
-            background #222222
-            statusline #dddddd
-            focused_workspace #0088CC #0088CC #ffffff
-            active_workspace #333333 #333333 #ffffff
-            inactive_workspace #333333 #333333 #888888
-            urgent_workspace #2f343a #900000 #ffffff
-          }
-        }
         client.focused #0088CC #0088CC #ffffff #dddddd
         client.focused_inactive #333333 #333333 #888888 #292d2e
         client.unfocused #333333 #333333 #888888 #292d2e
@@ -179,30 +163,109 @@
         seat "*" xcursor_theme Adwaita 24
     '';
 
-    environment.etc."i3status.conf".text = ''
-      general {
-        output_format = "i3bar"
-        colors = true
-        interval = 5
+    environment.etc."waybar/config".text = builtins.toJSON {
+      layer = "top";
+      position = "top";
+      height = 22;
+      modules-left = [ "sway/workspaces" "sway/mode" ];
+      modules-right = [ "pulseaudio" "battery" "clock" "tray" ];
+      "sway/workspaces" = {
+        disable-scroll = false;
+        all-outputs = false;
+      };
+      "sway/mode" = {
+        format = "{}";
+      };
+      tray = {
+        icon-size = 16;
+        spacing = 8;
+      };
+      pulseaudio = {
+        format = "♪ {volume}%";
+        format-muted = "♪ muted";
+        scroll-step = 5;
+        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+      };
+      battery = {
+        format = "{capacity}% {time}";
+        format-time = "{H}:{M:02}";
+        states = {
+          warning = 30;
+          critical = 15;
+        };
+      };
+      clock = {
+        format = "{:%Y-%m-%d %H:%M}";
+        interval = 30;
+      };
+    };
+
+    environment.etc."waybar/style.css".text = ''
+      * {
+        font-family: Hack, sans-serif;
+        font-size: 12pt;
+        border: none;
+        border-radius: 0;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
       }
 
-      order += "volume master"
-      order += "battery all"
-      order += "tztime local"
-
-      volume master {
-        format = "♪ %volume"
-        format_muted = "♪ muted"
-        device = "pulse"
+      window#waybar {
+        background-color: #222222;
+        color: #dddddd;
       }
 
-      battery all {
-        format = "%status %percentage %remaining"
-        low_threshold = 15
+      #workspaces button {
+        background-color: #333333;
+        color: #888888;
+        padding: 0 8px;
+        border: none;
+        border-radius: 0;
       }
 
-      tztime local {
-        format = "%Y-%m-%d %H:%M"
+      #workspaces button.visible {
+        background-color: #333333;
+        color: #ffffff;
+      }
+
+      #workspaces button.focused {
+        background-color: #0088CC;
+        color: #ffffff;
+      }
+
+      #workspaces button.urgent {
+        background-color: #900000;
+        color: #ffffff;
+      }
+
+      #mode {
+        background-color: #900000;
+        color: #ffffff;
+        padding: 0 8px;
+      }
+
+      #tray,
+      #pulseaudio,
+      #battery,
+      #clock {
+        padding: 0 8px;
+        color: #dddddd;
+        background-color: #222222;
+        border-left: 1px solid #666666;
+      }
+
+      #tray menu {
+        background-color: #222222;
+        color: #dddddd;
+      }
+
+      #battery.warning {
+        color: #ffaa00;
+      }
+
+      #battery.critical {
+        color: #ff5555;
       }
     '';
 
@@ -222,7 +285,7 @@
         wl-clipboard
         mako
         networkmanagerapplet
-        i3status
+        waybar
         swaylock
         swayidle
       ];
