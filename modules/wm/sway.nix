@@ -24,8 +24,9 @@
         bindsym $mod+Return exec alacritty
 
         # lock the screen
-        bindsym $mod+Control+l exec swaylock -c 000000
-        bindsym XF86ScreenSaver exec swaylock -c 000000
+        set $lockcmd swaylock -f -c 000000 && swaymsg "output * power off" && swayidle -w timeout 1 'true' resume 'swaymsg "output * power on"; pkill -nx swayidle'
+        bindsym $mod+Control+l exec $lockcmd
+        bindsym XF86ScreenSaver exec $lockcmd
 
         # kill focused window
         bindsym $mod+Shift+C kill
