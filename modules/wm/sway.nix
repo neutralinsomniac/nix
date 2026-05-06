@@ -126,7 +126,11 @@
 
         exec nm-applet
         exec xsetroot -solid darkgrey
-        exec swayidle -w before-sleep 'swaylock -c 000000 -f'
+        exec swayidle -w \
+            timeout 60 'light -O; light -S 10' resume 'light -I' \
+            timeout 300 'swaylock -c 000000 -f' \
+            timeout 305 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+            before-sleep 'swaylock -c 000000 -f'
         exec waybar -c /etc/waybar/config -s /etc/waybar/style.css
 
         client.focused #0088CC #0088CC #ffffff #dddddd
