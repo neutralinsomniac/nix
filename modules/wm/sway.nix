@@ -126,6 +126,7 @@
 
         exec nm-applet
         exec xsetroot -solid darkgrey
+        exec swayidle -w before-sleep 'swaylock -c 000000 -f'
 
         # Start i3bar to display a workspace bar (plus the system information i3status
         # finds out, if available)
@@ -223,6 +224,7 @@
         networkmanagerapplet
         i3status
         swaylock
+        swayidle
       ];
     };
 
