@@ -128,7 +128,7 @@
         exec nm-applet
         exec xsetroot -solid darkgrey
         exec swayidle -w \
-            timeout 60 'light -O; light -S 10' resume 'light -I' \
+            timeout 60 'brightnessctl -s set 10%' resume 'brightnessctl -r' \
             timeout 300 'swaylock -c 000000 -f' \
             timeout 305 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
             before-sleep 'swaylock -c 000000 -f'
@@ -140,8 +140,8 @@
         client.urgent #2f343a #900000 #ffffff #900000
 
         # Brightness
-        bindsym XF86MonBrightnessDown exec light -U 10
-        bindsym XF86MonBrightnessUp exec light -A 10
+        bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
+        bindsym XF86MonBrightnessUp exec brightnessctl set 10%+
 
         # Volume
         bindsym XF86AudioRaiseVolume exec 'wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+'
@@ -274,7 +274,8 @@
       }
     '';
 
-    programs.light.enable = true;
+    environment.systemPackages = [ pkgs.brightnessctl ];
+    services.udev.packages = [ pkgs.brightnessctl ];
 
     fonts.packages = [
       pkgs.font-awesome
