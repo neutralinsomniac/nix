@@ -172,7 +172,10 @@
       layer = "top";
       position = "top";
       height = 22;
-      modules-left = [ "sway/workspaces" "sway/mode" ];
+      fixed-center = false;
+      expand-center = true;
+      modules-left = [ "sway/workspaces" "sway/mode" "custom/layout" ];
+      modules-center = [ "sway/window" ];
       modules-right = [ "pulseaudio" "battery" "clock" "tray" ];
       "sway/workspaces" = {
         disable-scroll = false;
@@ -180,6 +183,15 @@
       };
       "sway/mode" = {
         format = "{}";
+      };
+      "custom/layout" = {
+        format = "[]=";
+        tooltip = false;
+      };
+      "sway/window" = {
+        format = "{title}";
+        max-length = 200;
+        expand = true;
       };
       tray = {
         icon-size = 16;
@@ -193,6 +205,7 @@
       };
       battery = {
         format = "{capacity}% {time}";
+        format-charging = "⚡ {capacity}% {time}";
         format-time = "{H}:{M:02}";
         states = {
           warning = 30;
@@ -207,8 +220,8 @@
 
     environment.etc."waybar/style.css".text = ''
       * {
-        font-family: Hack, sans-serif;
-        font-size: 12pt;
+        font-family: Hack, monospace;
+        font-size: 10pt;
         border: none;
         border-radius: 0;
         min-height: 0;
@@ -218,51 +231,70 @@
 
       window#waybar {
         background-color: #222222;
-        color: #dddddd;
+        color: #bbbbbb;
       }
 
       #workspaces button {
-        background-color: #333333;
-        color: #888888;
-        padding: 0 8px;
+        background-color: #222222;
+        color: #bbbbbb;
+        padding: 0 6px;
         border: none;
         border-radius: 0;
       }
 
       #workspaces button.visible {
-        background-color: #333333;
-        color: #ffffff;
+        background-color: #222222;
+        color: #bbbbbb;
       }
 
       #workspaces button.focused {
-        background-color: #0088CC;
-        color: #ffffff;
+        background-color: #005577;
+        color: #eeeeee;
       }
 
       #workspaces button.urgent {
-        background-color: #900000;
+        background-color: #ff0000;
         color: #ffffff;
       }
 
-      #mode {
-        background-color: #900000;
-        color: #ffffff;
-        padding: 0 8px;
+      #mode,
+      #custom-layout {
+        background-color: #222222;
+        color: #bbbbbb;
+        padding: 0 6px;
+      }
+
+      #window {
+        background-color: #005577;
+        color: #eeeeee;
+        padding: 0 6px;
+      }
+
+      window#waybar.empty #window {
+        background-color: #222222;
+        color: #bbbbbb;
       }
 
       #tray,
       #pulseaudio,
       #battery,
       #clock {
-        padding: 0 8px;
-        color: #dddddd;
+        padding: 0 6px;
+        color: #bbbbbb;
         background-color: #222222;
-        border-left: 1px solid #666666;
       }
 
       #tray menu {
         background-color: #222222;
-        color: #dddddd;
+        color: #bbbbbb;
+      }
+
+      #pulseaudio.muted {
+        color: #ff5555;
+      }
+
+      #battery.charging {
+        color: #88cc88;
       }
 
       #battery.warning {
