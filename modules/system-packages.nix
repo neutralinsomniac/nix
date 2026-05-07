@@ -87,5 +87,7 @@
 
   fonts.packages = with pkgs; [
     ultimate-oldschool-pc-font-pack
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
   ];
 }
