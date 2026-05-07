@@ -2,6 +2,7 @@
 {
   flake.nixosConfigurations.leviathan = lib.mkHost {
     name = "leviathan";
+    myHidpiScale = 1.75;
     extraModules = [
       inputs.nixos-hardware.nixosModules.asus-flow-gv302x-amdgpu
       (inputs.self + "/hw/leviathan/disk-config.nix")

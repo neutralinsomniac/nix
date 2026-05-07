@@ -4,7 +4,8 @@ inputs: {
       name,
       system ? "x86_64-linux",
       nixpkgs ? inputs.nixpkgs,
-      mywm ? "i3",
+      mywm ? "sway",
+      myHidpiScale ? 1.0,
       extraModules ? [ ],
     }:
     nixpkgs.lib.nixosSystem {
@@ -14,6 +15,7 @@ inputs: {
         {
           networking.hostName = name;
           mywm = mywm;
+          myHidpiScale = myHidpiScale;
         }
         inputs.disko.nixosModules.disko
         (inputs.self + "/hw/${name}/hardware-configuration.nix")

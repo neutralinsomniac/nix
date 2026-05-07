@@ -165,7 +165,7 @@
         repeat_rate 30
       }
 
-      output * scale 1.75
+      output * scale ${toString config.myHidpiScale}
 
       seat "*" xcursor_theme Adwaita 24
     '';

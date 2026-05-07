@@ -4,6 +4,12 @@
   lib,
   ...
 }:
+let
+  scale = config.myHidpiScale;
+  roundInt = x: builtins.floor (x + 0.5);
+  dpi = roundInt (96.0 * scale);
+  cursorSize = roundInt (24.0 * scale);
+in
 {
   config = lib.mkIf (config.mywm == "i3") {
     useKwallet = true;
@@ -125,7 +131,8 @@
 
       exec --no-startup-id nm-applet
       exec --no-startup-id xsetroot -solid darkgrey
-      exec --no-startup-id xrandr --dpi 168
+      exec_always --no-startup-id xsetroot -cursor_name left_ptr
+      exec --no-startup-id xrandr --dpi ${toString dpi}
       exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 000000
       exec --no-startup-id xautolock -time 5 -locker "i3lock -c 000000" -detectsleep
       exec --no-startup-id xset s 300 305 dpms 305 305 305
@@ -160,6 +167,11 @@
       bindsym XF86AudioRaiseVolume exec 'wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+'
       bindsym XF86AudioLowerVolume exec 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-'
       bindsym XF86AudioMute exec 'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle'
+    '';
+
+    environment.etc."X11/Xcursor.ad".text = ''
+      Xcursor.theme: Adwaita
+      Xcursor.size: ${toString cursorSize}
     '';
 
     environment.etc."i3status.conf".text = ''
@@ -225,9 +237,25 @@
 
     services.xserver.displayManager.lightdm.enable = true;
 
-    # Match sway's scale 1.75 for winit-based apps (alacritty). Otherwise winit
-    # picks up per-monitor EDID DPI (~226 on this panel) and renders fonts ~34%
-    # larger than sway. No-op on wayland.
-    environment.sessionVariables.WINIT_X11_SCALE_FACTOR = "1.75";
+    # Load Xcursor resources before i3 starts. xcb-util-cursor (used by i3bar
+    # and many libxcursor apps) reads Xresources at startup, so loading them
+    # via i3's exec_always is too late — i3bar reads an empty xrdb and falls
+    # back to 16px legacy cursor.
+    services.xserver.displayManager.sessionCommands = ''
+      ${pkgs.xorg.xrdb}/bin/xrdb -merge /etc/X11/Xcursor.ad
+    '';
+
+    # Force winit to scale=1 so alacritty renders at the raw point size
+    # (21pt) and doesn't scale the cursor. Without this, winit auto-detects
+    # ~2.35x from the panel's EDID DPI and double-scales everything.
+    #
+    # XCURSOR_THEME/SIZE: chromium and Electron apps (Signal etc.) don't
+    # read Xcursor.* xresources — they use these env vars (or fall back to
+    # their own defaults). xrdb covers everything else; these cover them.
+    environment.sessionVariables = {
+      WINIT_X11_SCALE_FACTOR = "1";
+      XCURSOR_THEME = "Adwaita";
+      XCURSOR_SIZE = toString cursorSize;
+    };
   };
 }
