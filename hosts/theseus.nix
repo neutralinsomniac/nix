@@ -2,6 +2,7 @@
 {
   flake.nixosConfigurations.theseus = lib.mkHost {
     name = "theseus";
+    myHidpiScale = 1.5;
     extraModules = [
       inputs.nixos-hardware.nixosModules.framework-13-7040-amd
       (inputs.self + "/hw/theseus/disable-wireless-powersave.nix")
