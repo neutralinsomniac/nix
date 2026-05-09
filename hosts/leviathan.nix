@@ -6,13 +6,9 @@
     extraModules = [
       inputs.nixos-hardware.nixosModules.asus-flow-gz302ea
       (inputs.self + "/hw/leviathan/disk-config.nix")
-      (
-        { pkgs, ... }:
-        {
-          boot.kernelPackages = pkgs.linuxPackages_latest;
-          hardware.bluetooth.enable = true;
-        }
-      )
+      {
+        hardware.bluetooth.enable = true;
+      }
     ];
   };
 }
