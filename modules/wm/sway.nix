@@ -17,6 +17,9 @@
 
       workspace_auto_back_and_forth yes
 
+      # copy screen
+      bindsym Print exec ${lib.getExe pkgs.grim} -g "$(${lib.getExe pkgs.slurp} -d)" - | ${pkgs.wl-clipboard}/bin/wl-copy
+
       # Use Mouse+$mod to drag floating windows to their wanted position
       floating_modifier $mod
 
