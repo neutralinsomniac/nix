@@ -23,13 +23,13 @@
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (pyfinal: pyprev: {
           rns = pyprev.rns.overridePythonAttrs rec {
-            version = "1.1.9";
+            version = "1.2.5";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "Reticulum";
               tag = version;
-              hash = "sha256-JYBXk/IOL+XVhvF1qEs/1H9VMWbfLQmIPrLJgJv2ZBw=";
+              hash = "sha256-FEpQiq6pnFGCMEGOikkf8QFRVPhlTf0X40foqCBfGpU=";
             };
           };
 
@@ -45,13 +45,13 @@
           };
 
           nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
-            version = "0.9.11";
+            version = "1.0.1";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "NomadNet";
               tag = version;
-              hash = "sha256-vIV3FEvwqd2je/DzGWeshEx5Tb+DhOQIg7l0LbffEwY=";
+              hash = "sha256-uNchcz9kiLX2nUNRC2rTMv7my+19ylZrHTGWbonziFc=";
             };
 
             dependencies = old.dependencies ++ [ pkgs.python3Packages.msgpack ];
