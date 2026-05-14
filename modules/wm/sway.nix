@@ -344,14 +344,5 @@
         swayidle
       ];
     };
-
-    # autologin
-    services.getty = {
-      autologinUser = "jeremy";
-      autologinOnce = true;
-    };
-    environment.loginShellInit = ''
-      [[ "$(tty)" == /dev/tty1 ]] && sway
-    '';
   };
 }
