@@ -323,6 +323,8 @@
     environment.systemPackages = [ pkgs.brightnessctl ];
     services.udev.packages = [ pkgs.brightnessctl ];
 
+    services.logind.settings.Login.HandlePowerKey = "ignore";
+
     fonts.packages = [
       pkgs.font-awesome
       pkgs.hack-font
