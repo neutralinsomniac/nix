@@ -58,5 +58,9 @@
     inputs.flake-parts.lib.mkFlake {
       inherit inputs;
       specialArgs = { inherit lib; };
-    } (inputs.import-tree ./hosts);
+    } {
+      imports = [ (inputs.import-tree ./hosts) ];
+      flake.overlays.reticulum = import ./overlays/reticulum.nix;
+      flake.overlays.default = import ./overlays/reticulum.nix;
+    };
 }
