@@ -3,11 +3,6 @@
   ...
 }:
 {
-  networking.firewall.allowedUDPPorts = [
-    29716
-    42671
-  ];
-
   environment.systemPackages = [
     pkgs.python3Packages.nomadnet
     pkgs.python3Packages.rns
@@ -23,35 +18,35 @@
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
         (pyfinal: pyprev: {
           rns = pyprev.rns.overridePythonAttrs rec {
-            version = "1.2.5";
+            version = "1.2.7";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "Reticulum";
               tag = version;
-              hash = "sha256-FEpQiq6pnFGCMEGOikkf8QFRVPhlTf0X40foqCBfGpU=";
+              hash = "sha256-Z4rAmprGj7MYkFHpaNwcMysjeSkLrqm115LzaNlI8I4=";
             };
           };
 
           lxmf = pyprev.lxmf.overridePythonAttrs rec {
-            version = "0.9.6";
+            version = "0.9.8";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "lxmf";
               tag = version;
-              hash = "sha256-Q84v1CkyEYpW4QdtOD6zp7bn4UzMDeS9Q8fO91BnuPA=";
+              hash = "sha256-26T8f4WCf5q5/2RKA2Dh5xxqUOR3XXRFOzezCuDRA6c=";
             };
           };
 
           nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
-            version = "1.0.1";
+            version = "1.1.0";
 
             src = pkgs.fetchFromGitHub {
               owner = "markqvist";
               repo = "NomadNet";
               tag = version;
-              hash = "sha256-uNchcz9kiLX2nUNRC2rTMv7my+19ylZrHTGWbonziFc=";
+              hash = "sha256-2XbEJfB9Qj58u3rdTQA4DY2ZsVk/6FBhvlggBdrwRBk=";
             };
 
             dependencies = old.dependencies ++ [ pkgs.python3Packages.msgpack ];
