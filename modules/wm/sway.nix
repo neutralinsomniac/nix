@@ -73,7 +73,7 @@
       bindsym $mod+f fullscreen
 
       # change container layout (stacked, tabbed, default)
-      bindsym $mod+s layout stacking
+      bindsym $mod+Shift+S layout stacking
       bindsym $mod+w layout tabbed
       bindsym $mod+e layout default
 
