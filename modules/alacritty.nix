@@ -28,7 +28,7 @@ in
     size = ${toString fontSize}
 
     [font.normal]
-    family = "Hack"
+    family = "Hack Nerd Font"
     style = "Regular"
 
     [keyboard]
