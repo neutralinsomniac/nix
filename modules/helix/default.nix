@@ -1,13 +1,13 @@
 {
-  inputs,
+  # inputs,
   pkgs,
-  # pkgsUnstable,
+  pkgsUnstable,
   ...
 }:
 let
-  helixPkg = inputs.helix.packages."${pkgs.stdenv.hostPlatform.system}".default;
+  # helixPkg = inputs.helix.packages."${pkgs.stdenv.hostPlatform.system}".default;
   # helixPkg = pkgs.helix;
-  # helixPkg = pkgsUnstable.helix;
+  helixPkg = pkgsUnstable.helix;
 
   helixConfig = ./config.toml;
 
