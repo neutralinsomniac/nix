@@ -4,7 +4,7 @@ inputs: {
       name,
       system ? "x86_64-linux",
       nixpkgs ? inputs.nixpkgs,
-      mywm ? "sway",
+      mywm ? "plasma",
       myHidpiScale ? 1.0,
       extraModules ? [ ],
     }:
