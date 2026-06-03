@@ -2,9 +2,9 @@
   description = "neutralinsomniac's nix config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
-    nixpkgs-2505.url = "nixpkgs/nixos-25.05";
+    # nixpkgs-2505.url = "nixpkgs/nixos-25.05";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
@@ -55,12 +55,14 @@
     let
       lib = inputs.nixpkgs.lib.extend (final: prev: import ./modules/_lib.nix inputs);
     in
-    inputs.flake-parts.lib.mkFlake {
-      inherit inputs;
-      specialArgs = { inherit lib; };
-    } {
-      imports = [ (inputs.import-tree ./hosts) ];
-      flake.overlays.reticulum = import ./overlays/reticulum.nix;
-      flake.overlays.default = import ./overlays/reticulum.nix;
-    };
+    inputs.flake-parts.lib.mkFlake
+      {
+        inherit inputs;
+        specialArgs = { inherit lib; };
+      }
+      {
+        imports = [ (inputs.import-tree ./hosts) ];
+        flake.overlays.reticulum = import ./overlays/reticulum.nix;
+        flake.overlays.default = import ./overlays/reticulum.nix;
+      };
 }

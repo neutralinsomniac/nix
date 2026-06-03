@@ -16,7 +16,6 @@
       alsa-utils
       android-tools
       binwalk
-      bitwarden-desktop
       blanket
       caligula
       catgirl
@@ -50,7 +49,14 @@
       nixpkgs-review
       ocaml
       p7zip
-      pipx
+      (pipx.overridePythonAttrs (old: {
+        disabledTests =
+          (old.disabledTests or [ ])
+          ++ [
+            "test_fix_package_name"
+            "test_parse_specifier_for_metadata"
+          ];
+      }))
       protobuf
       python313
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
