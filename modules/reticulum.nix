@@ -3,6 +3,12 @@
   ...
 }:
 {
+  networking.firewall.allowedUDPPorts = [
+    29716
+    29717
+    42671
+  ];
+
   environment.systemPackages = [
     pkgs.python3Packages.nomadnet
     pkgs.python3Packages.rns

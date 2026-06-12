@@ -202,6 +202,11 @@ in
   };
 
   nix.channel.enable = false;
+  networking.nat = {
+    enable = true;
+    externalInterface = "wlp1s0"; # Replace with your internet-facing interface
+    internalInterfaces = [ "enp195s0f3u1i2" ]; # Replace with your internal interface(s)
+  };
 
   # nix.settings.auto-optimise-store = true;
   # nix.gc = {
