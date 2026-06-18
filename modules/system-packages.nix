@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgsUnstable,
   lib,
   inputs,
   ...
@@ -36,6 +37,7 @@
       ghidra
       go
       gopls
+      inetutils
       libreoffice
       # inputs.kte.packages.${pkgs.stdenv.hostPlatform.system}.full
       man-pages
@@ -50,12 +52,10 @@
       ocaml
       p7zip
       (pipx.overridePythonAttrs (old: {
-        disabledTests =
-          (old.disabledTests or [ ])
-          ++ [
-            "test_fix_package_name"
-            "test_parse_specifier_for_metadata"
-          ];
+        disabledTests = (old.disabledTests or [ ]) ++ [
+          "test_fix_package_name"
+          "test_parse_specifier_for_metadata"
+        ];
       }))
       protobuf
       python313
@@ -76,6 +76,7 @@
       wireshark
       wl-clipboard
       yt-dlp
+      zip
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
       discord
