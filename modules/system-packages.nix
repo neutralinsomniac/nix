@@ -17,6 +17,7 @@
       alsa-utils
       android-tools
       binwalk
+      bison
       blanket
       caligula
       catgirl
@@ -32,9 +33,12 @@
       inputs.exocortex.packages.${pkgs.stdenv.hostPlatform.system}.exo
       ffmpeg
       file
+      flex
+      gcc
       gdb
       gh
       ghidra
+      gnumake
       go
       gopls
       inetutils
@@ -45,11 +49,13 @@
       minicom
       moonlight-qt
       mpv
+      multipath-tools
       ncdu
       nixd
       nixfmt
       nixpkgs-review
       ocaml
+      openssl
       p7zip
       (pipx.overridePythonAttrs (old: {
         disabledTests = (old.disabledTests or [ ]) ++ [
