@@ -2,7 +2,7 @@
   description = "neutralinsomniac's nix config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-26.05";
+    nixpkgs.url = "nixpkgs/release-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     # nixpkgs-2505.url = "nixpkgs/nixos-25.05";
 
