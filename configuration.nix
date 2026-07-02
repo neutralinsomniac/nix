@@ -179,6 +179,7 @@ in
   # 39849 = lxst
   networking.firewall.allowedTCPPorts = [
     39849
+    40931
     8000
   ];
   # Or disable the firewall altogether.

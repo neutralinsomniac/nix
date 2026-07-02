@@ -70,6 +70,7 @@
       (signal-desktop.override {
         commandLineArgs = "--password-store=kwallet6";
       })
+      simplex-chat-desktop
       sops
       sshfs
       ssh-to-age
