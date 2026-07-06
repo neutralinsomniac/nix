@@ -67,6 +67,7 @@
       python313
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
+      rtorrent
       (signal-desktop.override {
         commandLineArgs = "--password-store=kwallet6";
       })
