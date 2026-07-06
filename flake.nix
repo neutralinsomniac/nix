@@ -18,7 +18,7 @@
     lanzaboote.url = "github:nix-community/lanzaboote/v1.0.0";
     lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.url = "github:neutralinsomniac/nixos-hardware/master";
 
     nixos-apple-silicon.url = "github:nix-community/nixos-apple-silicon";
 
