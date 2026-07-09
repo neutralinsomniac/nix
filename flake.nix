@@ -64,5 +64,20 @@
         imports = [ (inputs.import-tree ./hosts) ];
         flake.overlays.reticulum = import ./overlays/reticulum.nix;
         flake.overlays.default = import ./overlays/reticulum.nix;
+        flake.nixosModules = {
+          rnsd = ./modules/rnsd.nix;
+          lxmd = ./modules/lxmd.nix;
+          rngit = ./modules/rngit.nix;
+          reticulum.imports = [
+            ./modules/rnsd.nix
+            ./modules/lxmd.nix
+            ./modules/rngit.nix
+          ];
+          default.imports = [
+            ./modules/rnsd.nix
+            ./modules/lxmd.nix
+            ./modules/rngit.nix
+          ];
+        };
       };
 }
