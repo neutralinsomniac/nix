@@ -19,6 +19,7 @@
       binwalk
       bison
       blanket
+      bubblewrap
       caligula
       catgirl
       chiaki-ng
@@ -54,6 +55,7 @@
       nixd
       nixfmt
       nixpkgs-review
+      nodejs
       ocaml
       openssl
       p7zip
