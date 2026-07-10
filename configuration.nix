@@ -201,7 +201,7 @@ in
     trusted-users = [ "jeremy" ];
   };
 
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+  # nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   nix.channel.enable = false;
   networking.nat = {
     enable = true;
