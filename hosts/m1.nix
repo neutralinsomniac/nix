@@ -11,7 +11,7 @@
         let
           firmware = pkgs.fetchzip {
             url = "https://pintobyte.com/tmp/m1-firmware.tgz";
-            hash = "sha256-wr1YWNJ8c3A4s8fXDNlhvjjq9r8Grkj2c17eX/gblJo=";
+            hash = "sha256-xmVfPwFfwASWEHqRbzBW81r3Gy+zAxMHASR6yu76Wfo=";
           };
         in
         {
@@ -21,6 +21,7 @@
               "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
             ];
           };
+          hardware.asahi.enable = true;
           environment.systemPackages = with pkgs; [ ncspot ];
           zramSwap.enable = true;
           boot.loader.systemd-boot.enable = true;
