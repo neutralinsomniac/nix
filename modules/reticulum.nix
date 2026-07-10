@@ -11,7 +11,6 @@
 
   environment.systemPackages = [
     pkgs.python3Packages.nomadnet
-    pkgs.python3Packages.rns
     pkgs.adafruit-nrfutil
   ];
 
