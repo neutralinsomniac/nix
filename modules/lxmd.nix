@@ -47,6 +47,10 @@ in
       }
     ];
 
+    # lxmd's ReadWritePaths needs this to exist at sandbox setup, which can
+    # race rnsd creating it on a fresh host
+    systemd.tmpfiles.rules = [ "d /var/lib/reticulum/storage 0750 reticulum reticulum -" ];
+
     systemd.services.lxmd = {
       description = "LXMF message router daemon";
       requires = [ "rnsd.service" ];
@@ -62,7 +66,7 @@ in
         User = "reticulum";
         Group = "reticulum";
         StateDirectory = "lxmd";
-        ReadOnlyPaths = [ "/var/lib/reticulum" ];
+        ReadWritePaths = [ "/var/lib/reticulum/storage" ];
         Restart = "on-failure";
         RestartSec = 5;
 
