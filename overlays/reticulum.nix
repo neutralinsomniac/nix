@@ -20,11 +20,11 @@ final: prev: {
       };
 
       nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
-        version = "1.2.6";
+        version = "1.2.7";
         src = pyfinal.fetchPypi {
           pname = "nomadnet";
           inherit version;
-          hash = "sha256-XNRs4avq22JslxkSlqgTOj0bKuiVwam3i9bzoMAUjAU=";
+          hash = "sha256-52pFpgeRBXouASwpx8vLn+ZDHx7Tl6NttkgRkENhT1s=";
         };
 
         dependencies = old.dependencies ++ [ pyfinal.msgpack ];
