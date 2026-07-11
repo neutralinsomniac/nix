@@ -20,7 +20,7 @@ inputs: {
         inputs.disko.nixosModules.disko
         (inputs.self + "/hw/${name}/hardware-configuration.nix")
         (inputs.self + "/configuration.nix")
-        inputs.nix-index-database.nixosModules.nix-index
+        inputs.nix-index-database.nixosModules.default
         { programs.nix-index-database.comma.enable = true; }
         { system.configurationRevision = inputs.self.rev or "dirty"; }
       ]

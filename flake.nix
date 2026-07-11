@@ -12,7 +12,9 @@
     nix-wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     nix-wrapper-modules.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-index-database.url = "github:nix-community/nix-index-database";
+    # pinned near the nixos-26.05 branch-off so the prebuilt index (built
+    # against nixos-unstable) stays close to the system nixpkgs
+    nix-index-database.url = "github:nix-community/nix-index-database/2026-05-17-060925";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
     lanzaboote.url = "github:nix-community/lanzaboote/v1.0.0";
