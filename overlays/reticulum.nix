@@ -10,14 +10,14 @@ final: prev: {
         };
       };
 
-      lxmf = pyprev.lxmf.overridePythonAttrs rec {
-        version = "1.0.1";
-        src = pyfinal.fetchPypi {
-          pname = "lxmf";
-          inherit version;
-          hash = "sha256-0S6tRIKWy9CSA0YtjclqJutx7xaLQZexM6lw1IOmB+o=";
+      lxmf = pyprev.lxmf.overridePythonAttrs (old: {
+        src = final.fetchFromGitHub {
+          owner = "neutralinsomniac";
+          repo = "lxmf";
+          rev = "1.0.2";
+          hash = "sha256-UaiB+SFbrH5xFFLTd0OQcuoS3hNIDRrXIiykOdjbA60=";
         };
-      };
+      });
 
       nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
         version = "1.2.7";
