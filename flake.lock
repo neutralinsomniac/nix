@@ -543,16 +543,15 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1783344119,
-        "narHash": "sha256-9Na3T7m7QtzBn1xlV893Y6KczT5t3Lm7eiM+XiCbHqg=",
+        "lastModified": 1783909700,
+        "narHash": "sha256-PFN61zHUM7GD4RtxeXmp3268FCzs+PCKUT27wDADHV0=",
         "owner": "neutralinsomniac",
         "repo": "nixos-hardware",
-        "rev": "e2043e6af2eddb383020c3c9bed23559295e08bb",
+        "rev": "3d95b49d0cec426a3b723c8323e1827845e407da",
         "type": "github"
       },
       "original": {
         "owner": "neutralinsomniac",
-        "ref": "master",
         "repo": "nixos-hardware",
         "type": "github"
       }
