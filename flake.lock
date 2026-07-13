@@ -543,11 +543,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1783909700,
-        "narHash": "sha256-PFN61zHUM7GD4RtxeXmp3268FCzs+PCKUT27wDADHV0=",
+        "lastModified": 1783950242,
+        "narHash": "sha256-e1OEgh81X/oMe9pOtZCA4UFGf9MfQ9lC96ZLkkcA7ys=",
         "owner": "neutralinsomniac",
         "repo": "nixos-hardware",
-        "rev": "3d95b49d0cec426a3b723c8323e1827845e407da",
+        "rev": "b6f5238e62076206a787eaf7f4dd3d92a6fed341",
         "type": "github"
       },
       "original": {
