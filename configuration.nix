@@ -173,7 +173,8 @@ in
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-  systemd.services.sshd.wantedBy = lib.mkForce [ ];
+  services.openssh.openFirewall = false; # only available on tailnet
+  # systemd.services.sshd.wantedBy = lib.mkForce [ ];
 
   # Open ports in the firewall.
   # 39849 = lxst
