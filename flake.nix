@@ -6,9 +6,6 @@
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     # nixpkgs-2505.url = "nixpkgs/nixos-25.05";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    import-tree.url = "github:vic/import-tree";
-
     nix-wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
     nix-wrapper-modules.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -56,30 +53,40 @@
     inputs:
     let
       lib = inputs.nixpkgs.lib.extend (final: prev: import ./modules/_lib.nix inputs);
+
+      # Auto-discover host definitions: every hosts/<name>.nix (skipping
+      # underscore-prefixed files) becomes nixosConfigurations.<name>.
+      hostFiles = builtins.attrNames (
+        lib.filterAttrs (
+          name: type: type == "regular" && lib.hasSuffix ".nix" name && !(lib.hasPrefix "_" name)
+        ) (builtins.readDir ./hosts)
+      );
     in
-    inputs.flake-parts.lib.mkFlake
-      {
-        inherit inputs;
-        specialArgs = { inherit lib; };
-      }
-      {
-        imports = [ (inputs.import-tree ./hosts) ];
-        flake.overlays.reticulum = import ./overlays/reticulum.nix;
-        flake.overlays.default = import ./overlays/reticulum.nix;
-        flake.nixosModules = {
-          rnsd = ./modules/rnsd.nix;
-          lxmd = ./modules/lxmd.nix;
-          rngit = ./modules/rngit.nix;
-          reticulum.imports = [
-            ./modules/rnsd.nix
-            ./modules/lxmd.nix
-            ./modules/rngit.nix
-          ];
-          default.imports = [
-            ./modules/rnsd.nix
-            ./modules/lxmd.nix
-            ./modules/rngit.nix
-          ];
-        };
+    {
+      overlays.reticulum = import ./overlays/reticulum.nix;
+      overlays.default = import ./overlays/reticulum.nix;
+
+      nixosModules = {
+        rnsd = ./modules/rnsd.nix;
+        lxmd = ./modules/lxmd.nix;
+        rngit = ./modules/rngit.nix;
+        reticulum.imports = [
+          ./modules/rnsd.nix
+          ./modules/lxmd.nix
+          ./modules/rngit.nix
+        ];
+        default.imports = [
+          ./modules/rnsd.nix
+          ./modules/lxmd.nix
+          ./modules/rngit.nix
+        ];
       };
+
+      nixosConfigurations = builtins.listToAttrs (
+        map (file: {
+          name = lib.removeSuffix ".nix" file;
+          value = import (./hosts + "/${file}") { inherit lib inputs; };
+        }) hostFiles
+      );
+    };
 }
