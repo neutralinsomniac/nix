@@ -1,6 +1,5 @@
 {
   pkgs,
-  pkgsUnstable,
   lib,
   inputs,
   ...
@@ -70,8 +69,13 @@
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
       rtorrent
-      (signal-desktop.override {
-        commandLineArgs = "--password-store=kwallet6";
+      (symlinkJoin {
+        name = "signal-desktop";
+        paths = [ signal-desktop ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/signal-desktop --add-flags "--password-store=kwallet6"
+        '';
       })
       sops
       sshfs
@@ -92,9 +96,9 @@
       # duckstation
       # tidal-hifi
       spotify
-      (pkgs.callPackage pkgs.ida-pro {
-        # Alternatively, fetch the installer through `fetchurl`, use a local path, etc.
-        runfile = pkgs.fetchurl {
+      (pkgs.ida-pro.overrideAttrs {
+        version = "9.3";
+        src = pkgs.fetchurl {
           url = "https://pintobyte.com/tmp/ida-pro_93_x64linux.run";
           hash = "sha256-LtQ65LuE103K5vAJkhDfqNYb/qSVL1+aB6mq4Wy3D4I=";
         };

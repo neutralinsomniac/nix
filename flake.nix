@@ -30,7 +30,7 @@
 
     jujutsu.url = "github:jj-vcs/jj";
 
-    ida-pro-overlay.url = "github:msanft/ida-pro-overlay/v9.2.0.250908";
+    ida-pro-overlay.url = "github:msanft/ida-pro-overlay";
     ida-pro-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     kte.url = "git+https://git.wntrmute.dev/kyle/kte";
