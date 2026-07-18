@@ -8,7 +8,8 @@ lib.mkHost {
       {
         hardware.bluetooth.enable = true;
         boot.kernelPackages = pkgs.linuxPackages_latest;
-        # useSecureBoot = true;
+        services.fprintd.enable = true;
+        useSecureBoot = true;
       }
     )
   ];
