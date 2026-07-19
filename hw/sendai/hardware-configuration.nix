@@ -19,6 +19,8 @@
     };
 
   boot.initrd.luks.devices."luks-99c7ca4f-0fe1-472b-bbdb-ade696fe4860".device = "/dev/disk/by-uuid/99c7ca4f-0fe1-472b-bbdb-ade696fe4860";
+  boot.initrd.luks.devices."luks-99c7ca4f-0fe1-472b-bbdb-ade696fe4860".bypassWorkqueues = true;
+  boot.initrd.luks.devices."luks-99c7ca4f-0fe1-472b-bbdb-ade696fe4860".allowDiscards = true;
   boot.initrd.luks.devices."luks-8cd2efb4-39e1-4b26-9531-b62bedad3d6c".device = "/dev/disk/by-uuid/8cd2efb4-39e1-4b26-9531-b62bedad3d6c";
 
   fileSystems."/boot" =
