@@ -8,6 +8,7 @@ lib.mkHost {
       {
         hardware.bluetooth.enable = true;
         boot.kernelPackages = pkgs.linuxPackages_latest;
+        networking.networkmanager.wifi.powersave = false;
         services.fprintd.enable = true;
         useSecureBoot = true;
       }
