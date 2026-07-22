@@ -2,20 +2,20 @@ final: prev: {
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (pyfinal: pyprev: {
       rns = pyprev.rns.overridePythonAttrs rec {
-        version = "1.3.9";
+        version = "1.4.0";
         src = pyfinal.fetchPypi {
           pname = "rns";
           inherit version;
-          hash = "sha256-/TdFwauk3L+IM/qHoxV+yZAHRaMtbZa6Mw1iOpiTKhU=";
+          hash = "sha256-+p520KeL8lPq5mE35rvcZfRw2zlQqVsDTOMsqEX/DkQ=";
         };
       };
 
-      lxmf = pyprev.lxmf.overridePythonAttrs (old: {
-        src = final.fetchFromGitHub {
-          owner = "neutralinsomniac";
-          repo = "lxmf";
-          rev = "1.0.2";
-          hash = "sha256-UaiB+SFbrH5xFFLTd0OQcuoS3hNIDRrXIiykOdjbA60=";
+      lxmf = pyprev.lxmf.overridePythonAttrs (old: rec {
+        version = "1.1.0";
+        src = final.fetchPypi {
+          pname = "lxmf";
+          inherit version;
+          hash = "sha256-GH5cuiVxY7oc/6G0mjPciJPPO5gjl8zXdGHOqlzVSvE=";
         };
       });
 
