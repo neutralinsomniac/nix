@@ -26,8 +26,6 @@ final: prev: {
           inherit version;
           hash = "sha256-52pFpgeRBXouASwpx8vLn+ZDHx7Tl6NttkgRkENhT1s=";
         };
-
-        dependencies = old.dependencies ++ [ pyfinal.msgpack ];
       });
     })
   ];
