@@ -2,11 +2,11 @@ final: prev: {
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (pyfinal: pyprev: {
       rns = pyprev.rns.overridePythonAttrs rec {
-        version = "1.4.0";
+        version = "1.4.2";
         src = pyfinal.fetchPypi {
           pname = "rns";
           inherit version;
-          hash = "sha256-+p520KeL8lPq5mE35rvcZfRw2zlQqVsDTOMsqEX/DkQ=";
+          hash = "sha256-J15DaYGcmfu9uLcKDU6z/JdncW/KY5/nIGhWg5+zhno=";
         };
       };
 
