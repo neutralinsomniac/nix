@@ -509,11 +509,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1784480788,
-        "narHash": "sha256-+Q5HuwtbW/52bzvg9SZiIruxSegCd9wyu5vc4dWpeqw=",
+        "lastModified": 1786898556,
+        "narHash": "sha256-0VxDI6OKCbMJRgBkcUctGre7q4DUwH2n+UzbvJ3LPgw=",
         "owner": "neutralinsomniac",
         "repo": "nixos-hardware",
-        "rev": "b83dddef43b69bf71a06d849d75b47a99b3cd6d6",
+        "rev": "d3fd4265b2a6a2e4d8fe6df72468f196164a2693",
         "type": "github"
       },
       "original": {
@@ -612,11 +612,11 @@
     },
     "nixpkgs_6": {
       "locked": {
-        "lastModified": 1785386831,
-        "narHash": "sha256-xQPrEWR75P2lZ/p9pAzIeMd4PtkckDLj6ojo+tWjZQw=",
-        "rev": "21ea275a7c46aef9d4d6ddc962e6d562e9d94183",
+        "lastModified": 1786711500,
+        "narHash": "sha256-mB6w7h+UsvxLf3PY6U3hSDVWCfmn2Q6VtSw5JugbeY0=",
+        "rev": "02e08985a27c65ffd33d434eeb2e660a2e4dc84d",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.6503.21ea275a7c46/nixexprs.tar.xz"
+        "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.7675.02e08985a27c/nixexprs.tar.xz"
       },
       "original": {
         "id": "nixpkgs",
