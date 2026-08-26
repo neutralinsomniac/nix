@@ -739,11 +739,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787770314,
-        "narHash": "sha256-myH2Autr4UJ0/Dq9vEP8mQTrqlWcIfF1sXyXuEqj250=",
+        "lastModified": 1787849224,
+        "narHash": "sha256-MsgPemwfd74xclZJ2H64eEoyEr9c7E1WWL7S/TnXUGA=",
         "ref": "refs/heads/main",
-        "rev": "56d99cf7c32afe3f6452c1e171c5cf856404ce67",
-        "revCount": 338,
+        "rev": "a3b03fc5940ced7f0a47435259c8bc2f5e41c66f",
+        "revCount": 347,
         "type": "git",
         "url": "ssh://git@github.com/neutralinsomniac/subvocal"
       },

@@ -42,6 +42,8 @@
     exocortex.url = "github:neutralinsomniac/exocortex";
     exocortex.inputs.nixpkgs.follows = "nixpkgs";
 
+    subvocal.url = "git+ssh://git@github.com/neutralinsomniac/subvocal";
+    subvocal.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
