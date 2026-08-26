@@ -37,7 +37,6 @@ in
       "niri"
       "plasma"
       "sway"
-      "tile"
       "windowmaker"
     ];
   };
