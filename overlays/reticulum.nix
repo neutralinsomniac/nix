@@ -2,29 +2,29 @@ final: prev: {
   pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
     (pyfinal: pyprev: {
       rns = pyprev.rns.overridePythonAttrs rec {
-        version = "1.4.2";
+        version = "1.5.0";
         src = pyfinal.fetchPypi {
           pname = "rns";
           inherit version;
-          hash = "sha256-J15DaYGcmfu9uLcKDU6z/JdncW/KY5/nIGhWg5+zhno=";
+          hash = "sha256-bH3tTnj/bxMoFN4cTgMtiEoXZGoiLpi8qA2Ni8YsVIY=";
         };
       };
 
       lxmf = pyprev.lxmf.overridePythonAttrs (old: rec {
-        version = "1.1.0";
+        version = "1.1.1";
         src = final.fetchPypi {
           pname = "lxmf";
           inherit version;
-          hash = "sha256-GH5cuiVxY7oc/6G0mjPciJPPO5gjl8zXdGHOqlzVSvE=";
+          hash = "sha256-8vfqF9eT/MMsq4JugejpgkQE0CXR/HGxQ74yQtReal4=";
         };
       });
 
       nomadnet = pyprev.nomadnet.overridePythonAttrs (old: rec {
-        version = "1.2.7";
+        version = "1.2.8";
         src = pyfinal.fetchPypi {
           pname = "nomadnet";
           inherit version;
-          hash = "sha256-52pFpgeRBXouASwpx8vLn+ZDHx7Tl6NttkgRkENhT1s=";
+          hash = "sha256-6RQsbUIruRc2r+br62GArjRQTst7xrR5R1YFVvjroeE=";
         };
       });
     })
