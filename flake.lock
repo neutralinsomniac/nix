@@ -665,6 +665,7 @@
         "nixpkgs": "nixpkgs_6",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "raptorboost": "raptorboost",
+        "septabee": "septabee",
         "subvocal": "subvocal"
       }
     },
@@ -728,6 +729,26 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "septabee": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788455111,
+        "narHash": "sha256-GQj3cfbiSxCRNq77P9IgYABUArR6crWTV/WO4Kl0qt4=",
+        "owner": "neutralinsomniac",
+        "repo": "septabee",
+        "rev": "99e037b49045ffcdb8055241fcafea9daa246715",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "repo": "septabee",
         "type": "github"
       }
     },

@@ -44,6 +44,9 @@
 
     subvocal.url = "git+ssh://git@github.com/neutralinsomniac/subvocal";
     subvocal.inputs.nixpkgs.follows = "nixpkgs";
+
+    septabee.url = "github:neutralinsomniac/septabee";
+    septabee.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

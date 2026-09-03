@@ -69,6 +69,7 @@
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
       rtorrent
+      inputs.septabee.packages.${pkgs.stdenv.hostPlatform.system}.septabee
       (symlinkJoin {
         name = "signal-desktop";
         paths = [ signal-desktop ];
