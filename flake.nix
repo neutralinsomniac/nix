@@ -24,7 +24,7 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    ghostty.url = "github:ghostty-org/ghostty";
+    # ghostty.url = "github:ghostty-org/ghostty";
 
     helix.url = "github:helix-editor/helix";
 
@@ -32,9 +32,6 @@
 
     ida-pro-overlay.url = "github:msanft/ida-pro-overlay";
     ida-pro-overlay.inputs.nixpkgs.follows = "nixpkgs";
-
-    kte.url = "git+https://git.wntrmute.dev/kyle/kte";
-    kte.inputs.nixpkgs.follows = "nixpkgs";
 
     raptorboost.url = "github:neutralinsomniac/raptorboost";
     raptorboost.inputs.nixpkgs.follows = "nixpkgs";
