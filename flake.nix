@@ -44,6 +44,9 @@
 
     septabee.url = "github:neutralinsomniac/septabee";
     septabee.inputs.nixpkgs.follows = "nixpkgs";
+
+    slippi.url = "git+ssh://git@github.com/neutralinsomniac/slippi-launcher";
+    slippi.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

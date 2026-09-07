@@ -571,6 +571,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "raptorboost": "raptorboost",
         "septabee": "septabee",
+        "slippi": "slippi",
         "subvocal": "subvocal"
       }
     },
@@ -655,6 +656,26 @@
         "owner": "neutralinsomniac",
         "repo": "septabee",
         "type": "github"
+      }
+    },
+    "slippi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788668870,
+        "narHash": "sha256-DwzbsIJaLdgByFbs+BJAsEDYDNiIe6TWPhcJEoPiUg0=",
+        "ref": "refs/heads/main",
+        "rev": "489b3e52918bed3f6c91bb468cbdf4571de8114d",
+        "revCount": 2463,
+        "type": "git",
+        "url": "ssh://git@github.com/neutralinsomniac/slippi-launcher"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/neutralinsomniac/slippi-launcher"
       }
     },
     "subvocal": {
