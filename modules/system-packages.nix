@@ -81,7 +81,7 @@
       sops
       sshfs
       ssh-to-age
-      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.subvocal-desktop
+      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.sayble-desktop
       tcpdump
       tmux
       tytools # for uploading firmware to m8
