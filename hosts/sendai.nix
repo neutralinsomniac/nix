@@ -8,6 +8,8 @@ lib.mkHost {
       {
         hardware.bluetooth.enable = true;
         boot.kernelPackages = pkgs.linuxPackages_latest;
+        # disable panel self refresh (Lunar Lake uses the xe driver)
+        boot.kernelParams = [ "xe.enable_psr=0" ];
         networking.networkmanager.wifi.powersave = false;
         services.fprintd.enable = true;
         # the reader intermittently wedges after suspend; keep it out of USB
