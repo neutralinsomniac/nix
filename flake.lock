@@ -319,6 +319,27 @@
         "type": "github"
       }
     },
+    "krane": {
+      "inputs": {
+        "nixos-hardware": "nixos-hardware",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789837136,
+        "narHash": "sha256-qGAlYOS5n2iDGvDuYx8GZk3U7jDGdguE/K1GROkfH8E=",
+        "owner": "neutralinsomniac",
+        "repo": "krane",
+        "rev": "f84c540fc49e55a886ee9d4e7f2ea38e504de9e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "repo": "krane",
+        "type": "github"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -387,7 +408,7 @@
     "nixos-apple-silicon": {
       "inputs": {
         "flake-compat": "flake-compat_2",
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1789333811,
@@ -405,7 +426,26 @@
     },
     "nixos-hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1789836673,
+        "narHash": "sha256-4vP0m4XjLJ50FGOfZjQle1Bxin8XGopsmJ5teVgrpNQ=",
+        "owner": "neutralinsomniac",
+        "repo": "nixos-hardware",
+        "rev": "534d81c0231bd0d6209d2a6ef5dec4d616ec25eb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neutralinsomniac",
+        "ref": "lenovo-ideapad-duet",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
+    "nixos-hardware_2": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "lastModified": 1788521082,
@@ -469,6 +509,19 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1767892417,
+        "narHash": "sha256-8bW3q88CEg2u4hSP66Vf4lpbLonHz7hqDNBMcCY7E9U=",
+        "rev": "3497aa5c9457a9d88d71fa93a4a8368816fbeeba",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.05pre924538.3497aa5c9457/nixexprs.tar.xz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1789006805,
         "narHash": "sha256-xB8mKMOx1IA9vTDNLmJZ6n4wCMq/cuWBBOzGCRnqxrU=",
         "owner": "NixOS",
@@ -483,7 +536,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1767892417,
         "narHash": "sha256-8bW3q88CEg2u4hSP66Vf4lpbLonHz7hqDNBMcCY7E9U=",
@@ -496,7 +549,7 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1789344334,
         "narHash": "sha256-it+7kNGnOOHBCEnl4SfZ7QtfGziH3EryzHqwvJpjAfg=",
@@ -562,12 +615,13 @@
         "helix": "helix",
         "ida-pro-overlay": "ida-pro-overlay",
         "jujutsu": "jujutsu",
+        "krane": "krane",
         "lanzaboote": "lanzaboote",
         "nix-index-database": "nix-index-database",
         "nix-wrapper-modules": "nix-wrapper-modules",
         "nixos-apple-silicon": "nixos-apple-silicon",
-        "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_5",
+        "nixos-hardware": "nixos-hardware_2",
+        "nixpkgs": "nixpkgs_6",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "raptorboost": "raptorboost",
         "septabee": "septabee",

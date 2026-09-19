@@ -69,7 +69,6 @@
       inputs.raptorboost.packages.${pkgs.stdenv.hostPlatform.system}.default
       ripgrep
       rtorrent
-      inputs.septabee.packages.${pkgs.stdenv.hostPlatform.system}.septabee
       (symlinkJoin {
         name = "signal-desktop";
         paths = [ signal-desktop ];
@@ -81,7 +80,6 @@
       sops
       sshfs
       ssh-to-age
-      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.sayble-desktop
       tcpdump
       tmux
       tytools # for uploading firmware to m8
@@ -95,6 +93,9 @@
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
       discord
+      # x86_64 only (no aarch64-linux build)
+      inputs.septabee.packages.${pkgs.stdenv.hostPlatform.system}.septabee
+      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.sayble-desktop
       # duckstation
       # tidal-hifi
       spotify

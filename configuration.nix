@@ -27,7 +27,7 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
-  # boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -208,6 +208,8 @@ in
     externalInterface = "wlp1s0"; # Replace with your internet-facing interface
     internalInterfaces = [ "enp195s0f3u1i2" ]; # Replace with your internal interface(s)
   };
+
+  nix.settings.extra-platforms = [ "aarch64-linux" ];
 
   # nix.settings.auto-optimise-store = true;
   # nix.gc = {
