@@ -47,6 +47,9 @@
 
     slippi.url = "git+ssh://git@github.com/neutralinsomniac/slippi-launcher";
     slippi.inputs.nixpkgs.follows = "nixpkgs";
+
+    krane.url = "github:neutralinsomniac/krane";
+    krane.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
