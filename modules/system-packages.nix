@@ -95,7 +95,7 @@
       discord
       # x86_64 only (no aarch64-linux build)
       inputs.septabee.packages.${pkgs.stdenv.hostPlatform.system}.septabee
-      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.sayble-desktop
+      inputs.subvocal.packages.${pkgs.stdenv.hostPlatform.system}.subvocal-desktop
       # duckstation
       # tidal-hifi
       spotify
