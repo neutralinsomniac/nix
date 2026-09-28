@@ -42,7 +42,7 @@
     subvocal.url = "git+ssh://git@github.com/neutralinsomniac/subvocal";
     subvocal.inputs.nixpkgs.follows = "nixpkgs";
 
-    septabee.url = "github:neutralinsomniac/septabee";
+    septabee.url = "github:Ap6661/septabee-flake";
     septabee.inputs.nixpkgs.follows = "nixpkgs";
 
     slippi.url = "git+ssh://git@github.com/neutralinsomniac/slippi-launcher";

@@ -699,16 +699,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1788564016,
-        "narHash": "sha256-5W9W3regTvmI76UpDgMkPmjE/iCAlWgaxvOt3a6KABA=",
-        "owner": "neutralinsomniac",
-        "repo": "septabee",
-        "rev": "c693d866b06d84fafae682d5c9ab82c8bc77003c",
+        "lastModified": 1790358517,
+        "narHash": "sha256-+75LUB+6fpF5I9OGNZZRigxeHZGzZ0hoW6U9xJ5KBeU=",
+        "owner": "Ap6661",
+        "repo": "septabee-flake",
+        "rev": "59625c31deea34a289403eeb984af2696420edb9",
         "type": "github"
       },
       "original": {
-        "owner": "neutralinsomniac",
-        "repo": "septabee",
+        "owner": "Ap6661",
+        "repo": "septabee-flake",
         "type": "github"
       }
     },
