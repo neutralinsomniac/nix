@@ -13,6 +13,8 @@ lib.mkHost {
       environment.systemPackages = [
         inputs.slippi.packages."x86_64-linux".slippi-launcher
       ];
+      # let the iGPU map up to 24 GiB of system RAM (kernel default is half)
+      boot.kernelParams = [ "ttm.pages_limit=6291456" ];
     }
   ];
 }
